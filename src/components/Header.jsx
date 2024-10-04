@@ -1,5 +1,19 @@
-import {Box, Flex, Heading, Button, Container, Spacer, Link} from '@chakra-ui/react';
+import {
+  Box,
+  Flex,
+  Heading,
+  Button,
+  Container,
+  Spacer,
+  Link,
+  Menu,
+  MenuButton,
+  IconButton,
+  MenuList, MenuItem, MenuGroup
+} from '@chakra-ui/react';
 import {useNavigate} from "react-router-dom";
+import {AddIcon, ArrowBackIcon, DownloadIcon, EditIcon, ExternalLinkIcon} from "@chakra-ui/icons";
+
 
 const Header = () => {
   const navigate = useNavigate();
@@ -12,22 +26,36 @@ const Header = () => {
               Ebooks Online
             </Heading>
             <Spacer/>
-            <Button colorScheme="teal" variant="outline" mr={4}
-                    onClick={() => navigate('/')}
-            >
-              Início
-            </Button>
-            <Button colorScheme="teal" variant="outline" mr={4}
-                    onClick={() => navigate('/downloads')}
-            >
-              Downloads
-            </Button>
-            <Button colorScheme="teal" variant="outline" mr={4}
-                    onClick={() => navigate('/upload')}
-            >
-              Cadastro
-            </Button>
-            <Button colorScheme="teal" onClick={() => navigate('/login')}>Começe Agora</Button>
+
+
+            <Menu>
+              <MenuButton as={Button} colorScheme="teal" variant="outline" mr={4}>
+                Menu
+              </MenuButton>
+              <MenuList>
+
+                <MenuItem icon={<ArrowBackIcon/>} onClick={() => navigate('/')}>
+                 Início
+                </MenuItem>
+
+                <MenuGroup title='Minha Conta'>
+                  <MenuItem icon={<EditIcon/>}>
+                    Meus dados
+                  </MenuItem>
+
+                </MenuGroup>
+                <MenuGroup title='Ebooks'>
+                  <MenuItem icon={<DownloadIcon/>} onClick={() => navigate('/downloads')}>
+                    Downloads
+                  </MenuItem>
+                  <MenuItem icon={<AddIcon/>} onClick={() => navigate('/upload')}>
+                    Upload
+                  </MenuItem>
+                </MenuGroup>
+              </MenuList>
+            </Menu>
+
+            <Button colorScheme="teal" onClick={() => navigate('/login')}>Login</Button>
           </Flex>
         </Container>
       </Flex>

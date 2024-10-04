@@ -11,7 +11,7 @@ const theme = extendTheme({
     global: {
       body: {
         bg: 'none', // exemplo de cor de fundo global
-        color: 'black',
+        color: 'gray.600',
       },
     },
   },

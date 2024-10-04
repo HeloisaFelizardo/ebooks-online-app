@@ -6,6 +6,7 @@ import Downloads from '../pages/Downloads';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Layout from "../components/Layout.jsx";
+import Register from "../pages/Register.jsx";
 
 const AppRouter = () => {
   return (
@@ -20,6 +21,7 @@ const AppRouter = () => {
 
         {/* A página de login é separada, sem Header e Footer */}
         <Route path="/login" element={<Login />} />
+        <Route path='/register' element={<Register/>}/>
       </Routes>
     </Router>
   );

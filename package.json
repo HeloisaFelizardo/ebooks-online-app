@@ -10,10 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@chakra-ui/icons": "^2.2.1",
     "@chakra-ui/react": "^2.8.2",
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "@react-buddy/ide-toolbox": "^2.4.0",
+    "formik": "^2.4.6",
     "framer-motion": "^11.9.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
