@@ -1,9 +1,11 @@
 import { Box, Button, Input, Heading, Link, Text, FormLabel, FormControl, FormErrorMessage } from '@chakra-ui/react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth.js'; // Importando o hook de autenticação
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login } = useAuth(); // Obtendo a função de login do contexto
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState({ email: '', password: '' });
@@ -21,9 +23,17 @@ const Login = () => {
   };
 
   const handleLogin = () => {
-    if (validate()) {
-      // Suponha que o login seja bem-sucedido, então navega para a Home
+    if (!validate()) return;
+
+    // Simulação de login com dois usuários diferentes (admin e user)
+    if (email === 'admin@admin.com' && password === 'admin') {
+      login({ role: 'admin', email }); // Utilizando a função login do contexto
       navigate('/');
+    } else if (email === 'user@user.com' && password === 'user') {
+      login({ role: 'user', email }); // Utilizando a função login do contexto
+      navigate('/');
+    } else {
+      setError({ email: '', password: '', general: 'Credenciais inválidas' });
     }
   };
 
@@ -52,6 +62,7 @@ const Login = () => {
           />
           {error.password && <FormErrorMessage>{error.password}</FormErrorMessage>}
         </FormControl>
+        {error.general && <Text color="red.500" mb={4}>{error.general}</Text>}
         <Button width="full" colorScheme="teal" onClick={handleLogin}>Entrar</Button>
         <Text mt={4} color="white">
           Não tem conta?{' '}

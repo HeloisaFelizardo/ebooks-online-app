@@ -15,8 +15,8 @@ const Profile = () => {
     // Aqui você pode carregar os dados atuais do usuário através de uma requisição à API
     const fetchUserData = async () => {
       const userData = {
-        name: 'Nome Atual', // Substitua pelos dados reais do usuário
-        email: 'email@atual.com'
+        name: 'Heloisa', // Substitua pelos dados reais do usuário
+        email: 'email@email.com'
       };
       setFormData(userData);
     };
@@ -51,7 +51,7 @@ const Profile = () => {
   return (
     <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
       <Box p={8} maxWidth="400px" borderWidth={1} borderRadius={8} boxShadow="lg" backgroundColor="blackAlpha.500">
-        <Heading as="h2" mb={6} textAlign="center" color="white">Meu Perfil</Heading>
+        <Heading as="h2" mb={6} textAlign="center" color="white">Meus Dados</Heading>
         <FormControl isInvalid={error.name} mb={4}>
           <FormLabel color="white" fontWeight="thin">Nome:</FormLabel>
           <Input

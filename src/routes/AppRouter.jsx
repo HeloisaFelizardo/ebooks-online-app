@@ -1,29 +1,45 @@
-import {BrowserRouter as Router, Routes, Route, Outlet} from 'react-router-dom';
+import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import Home from '../pages/Home';
 import Login from '../pages/Login';
-import Upload from '../pages/Upload';
-import Downloads from '../pages/Downloads';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
+import Upload from '../pages/admin/Upload.jsx';
+import ManageUsers from '../pages/admin/ManageUsers.jsx';
+import Downloads from '../pages/users/Downloads.jsx';
 import Layout from "../components/Layout.jsx";
 import Register from "../pages/Register.jsx";
+import Profile from "../pages/users/Profile.jsx";
+import ProtectedRoute from "../components/ProtectedRoute.jsx";
+import {AuthProvider} from "../context/AuthProvider.jsx";
+
 
 const AppRouter = () => {
   return (
-    <Router>
-      <Routes>
-        {/* O Layout é aplicado em todas as rotas */}
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Home />} />
-          <Route path="downloads" element={<Downloads />} />
-          <Route path="upload" element={<Upload />} />
-        </Route>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          {/* O Layout é aplicado em todas as rotas */}
+          <Route path="/" element={<Layout/>}>
+            <Route index element={<Home/>}/>
+            {/* Rota protegida para usuários autenticados */}
+            <Route element={<ProtectedRoute allowedRoles={['user', 'admin']}/>}>
+              <Route path="/downloads" element={<Downloads/>}/>
+              <Route path="/profile" element={<Profile/>}/>
+            </Route>
 
-        {/* A página de login é separada, sem Header e Footer */}
-        <Route path="/login" element={<Login />} />
-        <Route path='/register' element={<Register/>}/>
-      </Routes>
-    </Router>
+
+            {/* Rota protegida apenas para administradores */}
+            <Route element={<ProtectedRoute allowedRoles={['admin']}/>}>
+              <Route path="/admin/upload" element={<Upload/>}/>
+              <Route path="/admin/manage-users" element={<ManageUsers/>}/>
+            </Route>
+
+          </Route>
+
+          {/* A página de login é separada, sem Header e Footer */}
+          <Route path="/login" element={<Login/>}/>
+          <Route path='/register' element={<Register/>}/>
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 };
 

@@ -1,5 +1,4 @@
-import { Box, Heading } from '@chakra-ui/react';
-import BookList from '../components/BookList';
+import BookList from '../../components/BookList.jsx';
 
 const books = [
   {

@@ -5,18 +5,25 @@ import {
   Button,
   Container,
   Spacer,
-  Link,
   Menu,
   MenuButton,
-  IconButton,
-  MenuList, MenuItem, MenuGroup
+  MenuList,
+  MenuItem,
+  MenuGroup
 } from '@chakra-ui/react';
-import {useNavigate} from "react-router-dom";
-import {AddIcon, ArrowBackIcon, DownloadIcon, EditIcon, ExternalLinkIcon} from "@chakra-ui/icons";
-
+import { useNavigate } from "react-router-dom";
+import { AddIcon, ArrowBackIcon, DownloadIcon, EditIcon } from "@chakra-ui/icons";
+import { useAuth } from "../hooks/useAuth.js";
 
 const Header = () => {
   const navigate = useNavigate();
+  const { user, logout } = useAuth(); // Obtendo o usuário autenticado e seu papel
+
+  const handleLogout = () => {
+    logout();  // Remove o usuário do localStorage
+    navigate('/login'); // Redireciona para a página de login
+  };
+
   return (
     <Box bg="white" p={4} boxShadow="base" zIndex='1' position='relative'>
       <Flex justify="space-between" align="center">
@@ -25,37 +32,61 @@ const Header = () => {
             <Heading as='h1' color="#BD0000" textShadow="2px 2px 4px rgba(0, 0, 0, 0.3)">
               Ebooks Online
             </Heading>
-            <Spacer/>
-
+            <Spacer />
 
             <Menu>
               <MenuButton as={Button} colorScheme="teal" variant="outline" mr={4}>
                 Menu
               </MenuButton>
               <MenuList>
-
-                <MenuItem icon={<ArrowBackIcon/>} onClick={() => navigate('/')}>
-                 Início
+                <MenuItem icon={<ArrowBackIcon />} onClick={() => navigate('/')}>
+                  Início
                 </MenuItem>
 
-                <MenuGroup title='Minha Conta'>
-                  <MenuItem icon={<EditIcon/>}>
-                    Meus dados
-                  </MenuItem>
+                {/* Itens de menu específicos para admin */}
+                {user && user.role === 'admin' && (
+                  <>
+                    <MenuGroup title='Ebooks'>
+                      <MenuItem icon={<AddIcon />} onClick={() => navigate('/admin/upload')}>
+                        Upload
+                      </MenuItem>
+                      <MenuItem icon={<DownloadIcon />} onClick={() => navigate('/downloads')}>
+                        Downloads
+                      </MenuItem>
+                    </MenuGroup>
 
-                </MenuGroup>
-                <MenuGroup title='Ebooks'>
-                  <MenuItem icon={<DownloadIcon/>} onClick={() => navigate('/downloads')}>
-                    Downloads
-                  </MenuItem>
-                  <MenuItem icon={<AddIcon/>} onClick={() => navigate('/upload')}>
-                    Upload
-                  </MenuItem>
-                </MenuGroup>
+                    <MenuGroup title='Admin'>
+                      <MenuItem icon={<EditIcon />} onClick={() => navigate('/admin/manage-users')}>
+                        Gerenciar Usuários
+                      </MenuItem>
+                    </MenuGroup>
+                  </>
+                )}
+
+                {/* Itens de menu específicos para usuários comuns */}
+                {user && user.role === 'user' && (
+                  <>
+                    <MenuGroup title='Ebooks'>
+                      <MenuItem icon={<DownloadIcon />} onClick={() => navigate('/downloads')}>
+                        Downloads
+                      </MenuItem>
+                    </MenuGroup>
+
+                    <MenuGroup title='Minha Conta'>
+                      <MenuItem icon={<EditIcon />} onClick={() => navigate('/profile')}>
+                        Meus dados
+                      </MenuItem>
+                    </MenuGroup>
+                  </>
+                )}
               </MenuList>
             </Menu>
 
-            <Button colorScheme="teal" onClick={() => navigate('/login')}>Login</Button>
+            {user ? (
+              <Button colorScheme="teal" onClick={handleLogout}>Logout</Button>
+            ) : (
+              <Button colorScheme="teal" onClick={() => navigate('/login')}>Login</Button>
+            )}
           </Flex>
         </Container>
       </Flex>
