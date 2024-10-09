@@ -8,8 +8,8 @@ const BookList = ({books}) => {
   };
 
   return (
-    <Container maxW='container.xl' backgroundColor='white'>
-      <Heading as="h3" p={6}>Livros Disponíveis para Download</Heading>
+    <Container maxW='container.xl' backgroundColor='white' p={10}>
+      <Heading as="h3" mb={6}>Livros Disponíveis para Download</Heading>
       <SimpleGrid columns={{sm: 2, md: 3}} spacing={4}>
         {books.map((book) => (
           <BookCard
