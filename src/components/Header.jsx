@@ -13,7 +13,7 @@ import {
 } from '@chakra-ui/react';
 import {useNavigate} from "react-router-dom";
 import {AddIcon, ArrowBackIcon, DownloadIcon, EditIcon} from "@chakra-ui/icons";
-import {useAuth} from "../hooks/useAuth.js";
+import {useAuth} from "../context/useAuth.js";
 
 const Header = () => {
   const navigate = useNavigate();

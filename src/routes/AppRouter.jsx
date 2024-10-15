@@ -7,7 +7,7 @@ import Downloads from '../pages/users/Downloads.jsx';
 import Layout from "../components/Layout.jsx";
 import Register from "../pages/Register.jsx";
 import Profile from "../pages/users/Profile.jsx";
-import ProtectedRoute from "../components/ProtectedRoute.jsx";
+import ProtectedRoute from "./ProtectedRoute.jsx";
 import {AuthProvider} from "../context/AuthProvider.jsx";
 
 

@@ -1,39 +1,35 @@
 import { Box, Button, Input, Heading, Link, Text, FormLabel, FormControl, FormErrorMessage } from '@chakra-ui/react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth.js'; // Importando o hook de autenticação
+import { useAuth } from '../context/useAuth.js';
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login } = useAuth(); // Obtendo a função de login do contexto
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState({ email: '', password: '' });
+  const { login } = useAuth();
+  const [credentials, setCredentials] = useState({ email: '', password: '' });
+  const [error, setError] = useState({ email: '', password: '', general: '' });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setCredentials(prev => ({ ...prev, [name]: value }));
+  };
 
   const validate = () => {
     const newError = {};
-    if (!email) {
-      newError.email = 'Email é obrigatório';
-    }
-    if (!password) {
-      newError.password = 'Senha é obrigatória';
-    }
+    if (!credentials.email) newError.email = 'Email é obrigatório';
+    if (!credentials.password) newError.password = 'Senha é obrigatória';
     setError(newError);
     return Object.keys(newError).length === 0;
   };
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!validate()) return;
 
-    // Simulação de login com dois usuários diferentes (admin e user)
-    if (email === 'admin@admin.com' && password === 'admin') {
-      login({ role: 'admin', email }); // Utilizando a função login do contexto
-      navigate('/');
-    } else if (email === 'user@user.com' && password === 'user') {
-      login({ role: 'user', email }); // Utilizando a função login do contexto
-      navigate('/');
-    } else {
-      setError({ email: '', password: '', general: 'Credenciais inválidas' });
+    try {
+      await login(credentials);
+      navigate('/downloads');
+    } catch (error) {
+      setError(({...error, general: 'Falha no login. Verifique suas credenciais.' }));
     }
   };
 
@@ -44,21 +40,23 @@ const Login = () => {
         <FormControl isInvalid={error.email} mb={4} isRequired>
           <FormLabel color="white" fontWeight="thin">Email:</FormLabel>
           <Input
+            name="email"
             placeholder="Usuário"
-            value={email}
             color='white'
-            onChange={(e) => setEmail(e.target.value)}
+            value={credentials.email}
+            onChange={handleChange}
           />
           {error.email && <FormErrorMessage>{error.email}</FormErrorMessage>}
         </FormControl>
         <FormControl isInvalid={error.password} mb={4} isRequired>
           <FormLabel color="white" fontWeight="thin">Senha:</FormLabel>
           <Input
+            name="password"
             type="password"
             placeholder="Senha"
             color='white'
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={credentials.password}
+            onChange={handleChange}
           />
           {error.password && <FormErrorMessage>{error.password}</FormErrorMessage>}
         </FormControl>
@@ -66,9 +64,7 @@ const Login = () => {
         <Button width="full" colorScheme="teal" onClick={handleLogin}>Entrar</Button>
         <Text mt={4} color="white">
           Não tem conta?{' '}
-          <Link color="teal.200" onClick={() => navigate('/register')}>
-            Crie uma conta
-          </Link>
+          <Link color="teal.200" onClick={() => navigate('/register')}>Crie uma conta</Link>
         </Text>
       </Box>
     </Box>

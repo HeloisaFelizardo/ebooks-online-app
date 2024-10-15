@@ -57,6 +57,7 @@ const Profile = () => {
           <Input
             name="name"
             placeholder="Nome"
+            color='white'
             value={formData.name}
             onChange={handleChange}
           />
@@ -67,6 +68,7 @@ const Profile = () => {
           <Input
             name="email"
             placeholder="Email"
+            color='white'
             value={formData.email}
             onChange={handleChange}
           />
@@ -78,6 +80,7 @@ const Profile = () => {
             name="password"
             type="password"
             placeholder="Nova Senha"
+            color='white'
             value={formData.password}
             onChange={handleChange}
           />
