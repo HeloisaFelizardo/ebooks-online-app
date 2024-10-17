@@ -1,17 +1,17 @@
-import { Box, Button, Input, Heading, Link, Text, FormLabel, FormControl, FormErrorMessage } from '@chakra-ui/react';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/useAuth.js';
+import {Box, Button, Input, Heading, Link, Text, FormLabel, FormControl, FormErrorMessage} from '@chakra-ui/react';
+import {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {useAuth} from '../hooks/useAuth.js';
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
-  const [credentials, setCredentials] = useState({ email: '', password: '' });
-  const [error, setError] = useState({ email: '', password: '', general: '' });
+  const {login} = useAuth();
+  const [credentials, setCredentials] = useState({email: '', password: ''});
+  const [error, setError] = useState({email: '', password: '', general: ''});
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setCredentials(prev => ({ ...prev, [name]: value }));
+    const {name, value} = e.target;
+    setCredentials(prev => ({...prev, [name]: value}));
   };
 
   const validate = () => {
@@ -29,7 +29,7 @@ const Login = () => {
       await login(credentials);
       navigate('/downloads');
     } catch (error) {
-      setError(({...error, general: 'Falha no login. Verifique suas credenciais.' }));
+      setError(({...error, general: 'Falha no login. Verifique suas credenciais.'}));
     }
   };
 

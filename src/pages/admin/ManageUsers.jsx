@@ -3,24 +3,35 @@
 import {useEffect, useState} from 'react';
 import {Box, Table, Thead, Tbody, Tr, Th, Td, Button, Heading, Spinner, useToast, Container} from '@chakra-ui/react';
 import {useNavigate} from 'react-router-dom';
-import api from "../../services/api.js"; // Importando o axios
+import api from "../../services/api.js";
+import {useAuth} from "../../hooks/useAuth.js";
+
 
 const ManageUsers = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const toast = useToast();
   const navigate = useNavigate();
+  const {token} = useAuth();
 
   // Função para buscar a lista de usuários da API usando axios
   const fetchUsers = async () => {
     try {
-      const token = localStorage.getItem('token'); // Exemplo de onde você pode buscar o token
+      if (!token) {
+        console.error('Usuário não autenticado!');
+        return;
+      }
+
       const response = await api.get('/users', {
         headers: {
-          Authorization: `Bearer ${token}`, // Passa o token no cabeçalho
+          Authorization: `Bearer ${token}`,
         },
       });
-      setUsers(response.data);
+
+      // Verifique o que a API está retornando e assegure que é um array
+      const usersData = response.data.users;
+      console.log(usersData); // Verificar o que está sendo retornado
+      setUsers(Array.isArray(usersData) ? usersData : []);
       setLoading(false);
     } catch (error) {
       console.error('Erro ao buscar usuários:', error);
@@ -41,7 +52,7 @@ const ManageUsers = () => {
         isClosable: true,
       });
       // Atualiza a lista de usuários removendo o usuário excluído
-      setUsers(users.filter((user) => user.id !== userId));
+      setUsers(users.filter((user) => user._id !== userId));
     } catch (error) {
       console.error('Erro ao excluir usuário:', error);
       toast({
@@ -77,8 +88,8 @@ const ManageUsers = () => {
             </Thead>
             <Tbody>
               {users.map((user) => (
-                <Tr key={user.id}>
-                  <Td>{user.id}</Td>
+                <Tr key={user._id}>
+                  <Td>{user._id}</Td>
                   <Td>{user.name}</Td>
                   <Td>{user.email}</Td>
                   <Td>
