@@ -2,6 +2,17 @@
 
 import api from "../api/api.js";
 
+//Função para cadastrar usuario
+export const registerUser = async (userData) => {
+  try {
+    const response = await api.post("/users/register", userData);
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao cadastrar usuário:", error);
+    throw error;
+  }
+};
+
 // Função para buscar a lista de usuários da API
 export const fetchUsers = async (token) => {
   try {

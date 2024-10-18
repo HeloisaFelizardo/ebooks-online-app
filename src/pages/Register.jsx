@@ -1,6 +1,7 @@
-import { Box, Button, Input, Heading, Link, Text, FormLabel, FormControl, FormErrorMessage } from '@chakra-ui/react';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import {Box, Button, Input, Heading, Link, Text, FormLabel, FormControl, FormErrorMessage} from '@chakra-ui/react';
+import {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {registerUser} from "../services/userService.js";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -27,10 +28,20 @@ const Register = () => {
     });
   };
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     if (validate()) {
-      // Suponha que o registro seja bem-sucedido, então navega para a Home
-      navigate('/');
+
+      // requisição para registrar o usuário
+      try {
+        await registerUser(formData);
+        console.log('Dados do novo usuário:', formData);
+        // Suponha que o registro seja bem-sucedido, então navega para o login
+        navigate('/login');
+
+      } catch (error) {
+        console.error('Erro ao registrar usuário:', error);
+        setError({...error, general: 'Erro ao registrar usuário. Verifique os dados e tente novamente.'});
+      }
     }
   };
 

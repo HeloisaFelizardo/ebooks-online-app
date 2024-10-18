@@ -1,6 +1,6 @@
 // src/pages/admin/ManageUsers.jsx
 
-import {useEffect, useState} from 'react';
+import { useEffect, useState } from 'react';
 import {
   Box,
   Table,
@@ -14,19 +14,29 @@ import {
   Spinner,
   useToast,
   Container,
-  Flex
+  Flex,
+  useDisclosure,
+  Modal,
+  ModalContent,
+  ModalOverlay,
+  ModalCloseButton,
+  Text,
+  ModalBody,
+  ModalFooter,
+  ModalHeader // Corrigido: agora importado corretamente
 } from '@chakra-ui/react';
-import {useNavigate} from 'react-router-dom';
-import {useAuth} from "../../hooks/useAuth.js";
-import {deleteUser, fetchUsers} from "../../services/userService.js";
-
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from "../../hooks/useAuth.js";
+import { deleteUser, fetchUsers } from "../../services/userService.js";
 
 const ManageUsers = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedUserId, setSelectedUserId] = useState(null); // Armazena o ID do usuário a ser excluído
   const toast = useToast();
   const navigate = useNavigate();
-  const {token} = useAuth();
+  const { token } = useAuth();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   // Função para carregar os usuários
   const loadUsers = async () => {
@@ -44,14 +54,16 @@ const ManageUsers = () => {
   const handleDelete = async (userId) => {
     try {
       await deleteUser(userId, token);
+      const user = users.find((user) => user._id === userId);
       toast({
         title: 'Usuário excluído',
-        description: 'O usuário foi excluído com sucesso.',
+        description: `O usuário ${user.name} foi excluído com sucesso.`,
         status: 'success',
         duration: 3000,
         isClosable: true,
       });
       setUsers(users.filter((user) => user._id !== userId));
+      onClose(); // Fecha o modal após a exclusão
     } catch (error) {
       toast({
         title: 'Erro ao excluir usuário',
@@ -72,8 +84,8 @@ const ManageUsers = () => {
       <Box>
         <Heading as="h1" mb={6}>Gerenciar Usuários</Heading>
         {loading ? (
-          <Flex justify="center" align="center" height="100vh">
-            <Spinner size="xl"/>
+          <Flex justify="center" align="center">
+            <Spinner size="xl" />
           </Flex>
         ) : (
           <Table variant="simple">
@@ -95,7 +107,7 @@ const ManageUsers = () => {
                     <Button
                       colorScheme="blue"
                       size="sm"
-                      onClick={() => navigate(`/admin/edit-user/${user.id}`)}
+                      onClick={() => navigate(`/admin/edit-user/${user._id}`)}
                       mr={2}
                     >
                       Editar
@@ -103,7 +115,10 @@ const ManageUsers = () => {
                     <Button
                       colorScheme="red"
                       size="sm"
-                      onClick={() => handleDelete(user.id)}
+                      onClick={() => {
+                        setSelectedUserId(user._id); // Define o ID do usuário a ser excluído
+                        onOpen(); // Abre o modal
+                      }}
                     >
                       Excluir
                     </Button>
@@ -114,6 +129,28 @@ const ManageUsers = () => {
           </Table>
         )}
       </Box>
+
+      <Modal closeOnOverlayClick={false} isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Excluir Usuário</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody pb={6}>
+            <Text>Tem certeza que deseja excluir este usuário? Esta operação não pode ser desfeita.</Text>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button
+              colorScheme='blue'
+              mr={3}
+              onClick={() => handleDelete(selectedUserId)} // Passa o ID do usuário selecionado
+            >
+              Confirmar
+            </Button>
+            <Button onClick={onClose}>Cancelar</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Container>
   );
 };
