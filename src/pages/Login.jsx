@@ -38,25 +38,31 @@ const Login = () => {
       <Box p={8} maxWidth="400px" borderWidth={1} borderRadius={8} boxShadow="lg" backgroundColor="blackAlpha.500">
         <Heading as="h2" mb={6} textAlign="center" color="white">Login</Heading>
         <FormControl isInvalid={error.email} mb={4} isRequired>
-          <FormLabel color="white" fontWeight="thin">Email:</FormLabel>
+          <FormLabel color="white" fontWeight="thin" htmlFor="email">Email:</FormLabel>
           <Input
+            itemID='email'
+            id="email"
             name="email"
             placeholder="Usuário"
             color='white'
             value={credentials.email}
             onChange={handleChange}
+            autoComplete="email"
           />
           {error.email && <FormErrorMessage>{error.email}</FormErrorMessage>}
         </FormControl>
         <FormControl isInvalid={error.password} mb={4} isRequired>
-          <FormLabel color="white" fontWeight="thin">Senha:</FormLabel>
+          <FormLabel color="white" fontWeight="thin" htmlFor="password">Senha:</FormLabel>
           <Input
+            itemID='password'
+            id='password'
             name="password"
             type="password"
             placeholder="Senha"
             color='white'
             value={credentials.password}
             onChange={handleChange}
+            autoComplete="current-password"
           />
           {error.password && <FormErrorMessage>{error.password}</FormErrorMessage>}
         </FormControl>

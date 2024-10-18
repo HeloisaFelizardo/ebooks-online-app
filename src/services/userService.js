@@ -48,3 +48,29 @@ export const deleteUser = async (userId, token) => {
     throw error;
   }
 };
+
+// Função para fazer login
+export const userLogin = async (credentials) => {
+  try {
+    const response = await api.post('/users/login', credentials);
+    return response.data;
+  } catch (error) {
+    console.error('Erro ao fazer login:', error);
+    throw error;
+  }
+};
+
+// Função para atualizar um usuário
+export const updateUser = async (userId, userData, token) => {
+  try {
+    const response = await api.put(`/users/${userId}`, userData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Erro ao atualizar usuário:', error);
+    throw error;
+  }
+};

@@ -1,7 +1,7 @@
 import { createContext, useState, useEffect } from 'react';
 import {Spinner, Flex, useToast} from '@chakra-ui/react'; // Importe o Spinner do Chakra UI
-import api from "../api/api.js"; // Certifique-se de que seu serviço API está configurado corretamente
 import PropTypes from 'prop-types';
+import {userLogin} from "../services/userService.js";// Importe a função de login do seu serviço de usuário
 
 export const AuthContext = createContext();
 
@@ -25,12 +25,16 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (credentials) => {
     try {
-      const response = await api.post('/users/login', credentials); // Faz o login no backend
-      setUser(response.data); // Armazena o usuário no estado
-      localStorage.setItem('user', JSON.stringify(response.data)); // Armazena o usuário no localStorage
-      console.log("Usuário logado com sucesso", response.data); // Mensagem de confirmação de login
+      const response = await userLogin(credentials); // Faz o login no backend
 
-      const name = response.data.name;
+      const {token} = response; // Extrai o token da resposta
+
+      setUser(response); // Armazena o usuário no estado
+      localStorage.setItem('user', JSON.stringify(response)); // Armazena o usuário no localStorage
+      localStorage.setItem('token', token); // Armazena o token no localStorage
+      console.log("Usuário logado com sucesso", response); // Mensagem de confirmação de login
+
+      const name = response.name;
 
       // Exibe o toast de sucesso
       toast({

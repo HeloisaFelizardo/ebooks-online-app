@@ -1,7 +1,3 @@
-import Header from './components/Header';
-import BookList from './components/BookList';
-import Footer from './components/Footer';
-import {Box, Flex} from "@chakra-ui/react";
 import AppRouter from "./routes/AppRouter.jsx";
 
 const App = () => {
