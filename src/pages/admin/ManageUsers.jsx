@@ -1,10 +1,24 @@
 // src/pages/admin/ManageUsers.jsx
 
 import {useEffect, useState} from 'react';
-import {Box, Table, Thead, Tbody, Tr, Th, Td, Button, Heading, Spinner, useToast, Container} from '@chakra-ui/react';
+import {
+  Box,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  Button,
+  Heading,
+  Spinner,
+  useToast,
+  Container,
+  Flex
+} from '@chakra-ui/react';
 import {useNavigate} from 'react-router-dom';
-import api from "../../services/api.js";
 import {useAuth} from "../../hooks/useAuth.js";
+import {deleteUser, fetchUsers} from "../../services/userService.js";
 
 
 const ManageUsers = () => {
@@ -14,36 +28,22 @@ const ManageUsers = () => {
   const navigate = useNavigate();
   const {token} = useAuth();
 
-  // Função para buscar a lista de usuários da API usando axios
-  const fetchUsers = async () => {
+  // Função para carregar os usuários
+  const loadUsers = async () => {
     try {
-      if (!token) {
-        console.error('Usuário não autenticado!');
-        return;
-      }
-
-      const response = await api.get('/users', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      // Verifique o que a API está retornando e assegure que é um array
-      const usersData = response.data.users;
-      console.log(usersData); // Verificar o que está sendo retornado
-      setUsers(Array.isArray(usersData) ? usersData : []);
-      setLoading(false);
+      const usersData = await fetchUsers(token);
+      setUsers(usersData);
     } catch (error) {
-      console.error('Erro ao buscar usuários:', error);
+      console.error(error);
+    } finally {
       setLoading(false);
     }
   };
 
-
-  // Função para excluir um usuário usando axios
+  // Função para excluir um usuário
   const handleDelete = async (userId) => {
     try {
-      await api.delete(`/users/${userId}`); // Requisição DELETE com axios
+      await deleteUser(userId, token);
       toast({
         title: 'Usuário excluído',
         description: 'O usuário foi excluído com sucesso.',
@@ -51,10 +51,8 @@ const ManageUsers = () => {
         duration: 3000,
         isClosable: true,
       });
-      // Atualiza a lista de usuários removendo o usuário excluído
       setUsers(users.filter((user) => user._id !== userId));
     } catch (error) {
-      console.error('Erro ao excluir usuário:', error);
       toast({
         title: 'Erro ao excluir usuário',
         description: 'Não foi possível excluir o usuário.',
@@ -65,9 +63,8 @@ const ManageUsers = () => {
     }
   };
 
-  // Carrega os usuários ao montar o componente
   useEffect(() => {
-    fetchUsers();
+    loadUsers();
   }, []);
 
   return (
@@ -75,7 +72,9 @@ const ManageUsers = () => {
       <Box>
         <Heading as="h1" mb={6}>Gerenciar Usuários</Heading>
         {loading ? (
-          <Spinner size="xl"/>
+          <Flex justify="center" align="center" height="100vh">
+            <Spinner size="xl"/>
+          </Flex>
         ) : (
           <Table variant="simple">
             <Thead>

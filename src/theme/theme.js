@@ -1,5 +1,4 @@
 import { extendTheme } from '@chakra-ui/react';
-import { GlobalStyle } from '@chakra-ui/react';
 
 const theme = extendTheme({
   fonts: {

@@ -1,11 +1,13 @@
 import { createContext, useState, useEffect } from 'react';
-import api from "../services/api"; // Certifique-se de que seu serviço API está configurado corretamente
+import {Spinner, Flex, useToast} from '@chakra-ui/react'; // Importe o Spinner do Chakra UI
+import api from "../api/api.js"; // Certifique-se de que seu serviço API está configurado corretamente
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null); // Inicialize o estado como null
   const [loading, setLoading] = useState(true); // Para gerenciar o estado de carregamento
+  const toast = useToast();
 
   useEffect(() => {
     // Verifica se o usuário já está logado ao montar o componente
@@ -26,6 +28,18 @@ export const AuthProvider = ({ children }) => {
       setUser(response.data); // Armazena o usuário no estado
       localStorage.setItem('user', JSON.stringify(response.data)); // Armazena o usuário no localStorage
       console.log("Usuário logado com sucesso", response.data); // Mensagem de confirmação de login
+
+      const name = response.data.name;
+
+      // Exibe o toast de sucesso
+      toast({
+        title: 'Login realizado com sucesso.',
+        description: `Bem vindo ${name}!`,
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+
     } catch (error) {
       console.error("Erro ao fazer login", error);
       throw error;
@@ -43,8 +57,12 @@ export const AuthProvider = ({ children }) => {
   };
 
   if (loading) {
-    // Enquanto os dados do usuário estão sendo carregados, você pode exibir um loader
-    return <div>Carregando...</div>;
+    // Exibe o Spinner enquanto os dados estão carregando
+    return (
+      <Flex justify="center" align="center" height="100vh">
+        <Spinner size="xl" />
+      </Flex>
+    );
   }
 
   return (

@@ -7,7 +7,7 @@ import theme from './theme/theme.js';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <ChakraProvider theme={theme}>
+    <ChakraProvider theme={theme} toastOptions={{ defaultOptions: { position: 'top-right' } }}>
       <App/>
     </ChakraProvider>
   </StrictMode>,

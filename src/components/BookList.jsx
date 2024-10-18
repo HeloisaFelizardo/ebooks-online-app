@@ -1,7 +1,7 @@
 import {Container, Heading, SimpleGrid} from '@chakra-ui/react';
 import BookCard from './BookCard';
 import {useEffect, useState} from "react";
-import api from "../services/api.js";
+import api from "../api/api.js";
 
 const BookList = ({books}) => {
 
