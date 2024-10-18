@@ -1,25 +1,25 @@
-import { createContext, useState, useEffect } from 'react';
+import {createContext, useState, useEffect} from 'react';
 import {Spinner, Flex, useToast} from '@chakra-ui/react'; // Importe o Spinner do Chakra UI
 import PropTypes from 'prop-types';
 import {userLogin} from "../services/userService.js";// Importe a função de login do seu serviço de usuário
 
 export const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
+export const AuthProvider = ({children}) => {
   const [user, setUser] = useState(null); // Inicialize o estado como null
   const [loading, setLoading] = useState(true); // Para gerenciar o estado de carregamento
-  const toast = useToast();
+  const toast = useToast(); // Use o hook useToast para exibir mensagens
+
+  // Verifica se o usuário já está logado ao montar o componente
+  const checkUserLoggedIn = () => {
+    const storedUser = localStorage.getItem('user'); // Recupera o usuário do localStorage
+    if (storedUser) {
+      setUser(JSON.parse(storedUser)); // Define o usuário se encontrado
+    }
+    setLoading(false); // Conclui o carregamento
+  };
 
   useEffect(() => {
-    // Verifica se o usuário já está logado ao montar o componente
-    const checkUserLoggedIn = () => {
-      const storedUser = localStorage.getItem('user'); // Recupera o usuário do localStorage
-      if (storedUser) {
-        setUser(JSON.parse(storedUser)); // Define o usuário se encontrado
-      }
-      setLoading(false); // Conclui o carregamento
-    };
-
     checkUserLoggedIn();
   }, []);
 
@@ -65,13 +65,13 @@ export const AuthProvider = ({ children }) => {
     // Exibe o Spinner enquanto os dados estão carregando
     return (
       <Flex justify="center" align="center" height="100vh">
-        <Spinner size="xl" />
+        <Spinner size="xl"/>
       </Flex>
     );
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, token: user?.token }}>
+    <AuthContext.Provider value={{user, login, logout, token: user?.token}}>
       {children}
     </AuthContext.Provider>
   );

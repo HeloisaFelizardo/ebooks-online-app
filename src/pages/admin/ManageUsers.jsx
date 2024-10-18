@@ -32,13 +32,13 @@ const ManageUsers = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedUserId, setSelectedUserId] = useState(null); // Armazena o ID do usuário a ser atualizado/excluído
-  const [selectedUser, setSelectedUser] = useState({ name: '', email: '', password: '' }); // Armazena os dados do usuário a ser atualizado
+  const [selectedUser, setSelectedUser] = useState({name: '', email: '', password: ''}); // Armazena os dados do usuário a ser atualizado
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false); // Estado para o modal de atualização
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // Estado para o modal de exclusão
   const toast = useToast();
   const {token} = useAuth();
   const initialRef = useRef(null);
-  const finalRef = useRef(null);
+  //const finalRef = useRef(null);
 
   // Função para carregar os usuários
   const loadUsers = async () => {
@@ -80,13 +80,20 @@ const ManageUsers = () => {
 
   // Função para atualizar o usuário
   const handleUpdate = async (userId) => {
-    console.log("Token:", token);
+
     try {
-      const updatedUser = await updateUser(userId, token, selectedUser); // Passa o objeto atualizado
-      setUsers(users.map((user) => (user._id === userId ? updatedUser : user))); // Atualiza o usuário na lista
+      const updatedUser = await updateUser(userId, selectedUser, token); // Passa o objeto atualizado
+      console.log('Updated User:', updatedUser);
+
+      const user = users.find((user) => user._id === userId); // Encontra o usuário na lista
+
+      setUsers(users.map((user) => user._id === userId ? updatedUser : user)); // Atualiza o usuário na lista
+
+      loadUsers(); // Recarrega a lista de usuários
+
       toast({
         title: 'Usuário atualizado',
-        description: `O usuário foi atualizado com sucesso.`,
+        description: `O usuário ${user.name} foi atualizado com sucesso.`,
         status: 'success',
         duration: 3000,
         isClosable: true,
@@ -107,14 +114,14 @@ const ManageUsers = () => {
   // Função para abrir o modal de atualização e preencher os campos
   const openUpdateModal = (user) => {
     setSelectedUserId(user._id);
-    setSelectedUser({ name: user.name, email: user.email, password: '' }); // Define os dados do usuário nos inputs
+    setSelectedUser({name: user.name, email: user.email, password: ''}); // Define os dados do usuário nos inputs
     setIsUpdateModalOpen(true);
   };
 
   // Manipula a mudança nos inputs
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setSelectedUser((prevUser) => ({ ...prevUser, [name]: value }));
+    const {name, value} = e.target;
+    setSelectedUser((prevUser) => ({...prevUser, [name]: value}));
   };
 
   useEffect(() => {
@@ -192,10 +199,9 @@ const ManageUsers = () => {
       </Modal>
 
       {/* Modal de atualização de usuário */}
-      <Modal  initialFocusRef={initialRef}
-              finalFocusRef={finalRef}
-              isOpen={isUpdateModalOpen}
-              onClose={() => setIsUpdateModalOpen(false)}
+      <Modal initialFocusRef={initialRef}
+             isOpen={isUpdateModalOpen}
+             onClose={() => setIsUpdateModalOpen(false)}
       >
         <ModalOverlay/>
         <ModalContent>
