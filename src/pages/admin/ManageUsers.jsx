@@ -38,7 +38,6 @@ const ManageUsers = () => {
   const toast = useToast();
   const {token} = useAuth();
   const initialRef = useRef(null);
-  //const finalRef = useRef(null);
 
   // Função para carregar os usuários
   const loadUsers = async () => {
@@ -80,7 +79,6 @@ const ManageUsers = () => {
 
   // Função para atualizar o usuário
   const handleUpdate = async (userId) => {
-
     try {
       const updatedUser = await updateUser(userId, selectedUser, token); // Passa o objeto atualizado
       console.log('Updated User:', updatedUser);
@@ -98,7 +96,9 @@ const ManageUsers = () => {
         duration: 3000,
         isClosable: true,
       });
+
       setIsUpdateModalOpen(false); // Fecha o modal após a atualização
+
     } catch (error) {
       console.error('Erro ao atualizar usuário:', error);
       toast({

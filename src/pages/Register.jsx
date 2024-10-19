@@ -1,16 +1,24 @@
-import {Box, Button, Input, Heading, Link, Text, FormLabel, FormControl, FormErrorMessage} from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Input,
+  Heading,
+  Link,
+  Text,
+  FormLabel,
+  FormControl,
+  FormErrorMessage,
+  useToast
+} from '@chakra-ui/react';
 import {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {registerUser} from "../services/userService.js";
 
 const Register = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: ''
-  });
+  const [formData, setFormData] = useState({name: '', email: '', password: ''});
   const [error, setError] = useState({});
+  const toast = useToast();
 
   const validate = () => {
     const newError = {};
@@ -30,17 +38,43 @@ const Register = () => {
 
   const handleRegister = async () => {
     if (validate()) {
-
       // requisição para registrar o usuário
       try {
         await registerUser(formData);
         console.log('Dados do novo usuário:', formData);
+
+        // Se o registro foi bem-sucedido
+        toast({
+          title: 'Sucesso!',
+          description: 'Usuário registrado com sucesso.',
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+        });
+
         // Suponha que o registro seja bem-sucedido, então navega para o login
         navigate('/login');
 
       } catch (error) {
-        console.error('Erro ao registrar usuário:', error);
-        setError({...error, general: 'Erro ao registrar usuário. Verifique os dados e tente novamente.'});
+        // Verifica se o erro vem da API com código 400 (email já cadastrado)
+        if (error.response && error.response.status === 400) {
+          toast({
+            title: 'Erro no registro',
+            description: error.response.data.error, // Mensagem enviada pelo backend
+            status: 'error',
+            duration: 5000,
+            isClosable: true,
+          });
+        } else {
+          // Outro erro não esperado
+          toast({
+            title: 'Erro inesperado',
+            description: 'Algo deu errado ao registrar o usuário.',
+            status: 'error',
+            duration: 5000,
+            isClosable: true,
+          });
+        }
       }
     }
   };

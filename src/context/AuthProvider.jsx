@@ -34,12 +34,10 @@ export const AuthProvider = ({children}) => {
       localStorage.setItem('token', token); // Armazena o token no localStorage
       console.log("Usuário logado com sucesso", response); // Mensagem de confirmação de login
 
-      const name = response.name;
-
       // Exibe o toast de sucesso
       toast({
         title: 'Login realizado com sucesso.',
-        description: `Bem vindo ${name}!`,
+        description: `Bem vindo ${response.name}!`,
         status: 'success',
         duration: 3000,
         isClosable: true,
