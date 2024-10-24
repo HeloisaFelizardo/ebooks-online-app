@@ -1,54 +1,35 @@
 import BookList from '../../components/BookList.jsx';
-
-const books = [
-  {
-    id: 1,
-    title: "A consciencia do atomo",
-    author: "Alice Bailey",
-    coverUrl: "./assets/images/cover.jpg",
-    pdfUrl: "/path/to/book1.pdf"
-  },
-  {
-    id: 2,
-    title: "A consciencia do atomo",
-    author: "Alice Bailey",
-    coverUrl: "uploads/covers/1727566604488-java.jpg",
-    pdfUrl: "/path/to/book1.pdf"
-  },
-  {
-    id: 3,
-    title: "A consciencia do atomo",
-    author: "Alice Bailey",
-    coverUrl: "uploads/covers/1727566604488-java.jpg",
-    pdfUrl: "/path/to/book1.pdf"
-  },
-  {
-    id: 4,
-    title: "A consciencia do atomo",
-    author: "Alice Bailey",
-    coverUrl: "uploads/covers/1727566604488-java.jpg",
-    pdfUrl: "/path/to/book1.pdf"
-  },
-  {
-    id: 5,
-    title: "A consciencia do atomo",
-    author: "Alice Bailey",
-    coverUrl: "uploads/covers/1727566604488-java.jpg",
-    pdfUrl: "/path/to/book1.pdf"
-  },
-  {
-    id: 6,
-    title: "A consciencia do atomo",
-    author: "Alice Bailey",
-    coverUrl: "uploads/covers/1727566604488-java.jpg",
-    pdfUrl: "/path/to/book1.pdf"
-  },
-  // Adicione mais livros conforme necessário
-];
+import {useEffect, useState} from "react";
+import {getBooks} from "../../services/bookService.js";
+import {Flex, Spinner} from "@chakra-ui/react";
 
 const Downloads = () => {
+  const [books, setBooks] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const loadBooks = async () => {
+    try {
+      const booksData = await getBooks();
+      setBooks(booksData);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadBooks();
+  }, []);
+
+  if (loading) {
+    return <Flex justify="center" align="center" height='50vh'>
+      <Spinner size="xl"/>
+    </Flex>
+  }
+
   return (
-      <BookList books={books} />
+    <BookList books={books}/>
   );
 };
 

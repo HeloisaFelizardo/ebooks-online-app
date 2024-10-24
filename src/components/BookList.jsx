@@ -1,33 +1,34 @@
 import {Container, Heading, SimpleGrid} from '@chakra-ui/react';
 import BookCard from './BookCard';
-import {useEffect, useState} from "react";
-import api from "../api/api.js";
+import {downloadBook} from "../services/bookService.js";
+import {useAuth} from "../hooks/useAuth.js";
 
 const BookList = ({books}) => {
+  const {token} = useAuth();
 
-  const [ setEbooks] = useState([]);  // Estado para armazenar os ebooks
-  const [loading, setLoading] = useState(true);  // Estado para controlar o carregamento
-  const [error, setError] = useState(null);  // Estado para controlar os erros
+  const handleDownload = async (bookId) => {
+    try {
+      const blob = await downloadBook(bookId, token); //  Receba o Blob diretamente da função downloadBook
+      console.log(blob);
 
-  useEffect(() => {
-    // Função assíncrona para buscar os dados da API
-    const fetchEbooks = async () => {
-      try {
-        const response = await api.get('/books'); // Requisição GET
-        setEbooks(response.data); // Armazena os dados recebidos no estado
-      } catch (error) {
-        setError(error.message); // Armazena a mensagem de erro
-      } finally {
-        setLoading(false); // Define o carregamento como falso após a requisição
-      }
-    };
+      // Certifica-se de que o blob está no formato correto (application/pdf)
+      const url = window.URL.createObjectURL(new Blob([blob], { type: 'application/pdf' }));
 
-    fetchEbooks();
-  }, []);
+      // Exibe a URL gerada no console
+      console.log('URL gerada:', url);
 
-  const handleDownload = (pdfUrl) => {
-    // Lógica para baixar o PDF
-    window.open(pdfUrl, '_blank');
+      // Cria um link temporário para o download
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'download.pdf';  // Nome do arquivo
+      a.click();
+
+      // Libera o URL após o uso
+      window.URL.revokeObjectURL(url);
+
+    } catch (error) {
+      console.error("Erro ao baixar o PDF:", error);
+    }
   };
 
   return (
@@ -36,11 +37,11 @@ const BookList = ({books}) => {
       <SimpleGrid columns={{sm: 2, md: 3}} spacing={4}>
         {books.map((book) => (
           <BookCard
-            key={book.id}
+            key={book._id}
             title={book.title}
             author={book.author}
             coverUrl={book.coverUrl}
-            onDownload={() => handleDownload(book.pdfUrl)}
+            onDownload={() => handleDownload(book._id)}
           />
         ))}
       </SimpleGrid>
