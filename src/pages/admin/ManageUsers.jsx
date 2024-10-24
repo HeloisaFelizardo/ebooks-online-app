@@ -77,8 +77,26 @@ const ManageUsers = () => {
     }
   };
 
+  // Função para validar campos vazios
+  const validateForm = () => {
+    if (!selectedUser.name.trim() || !selectedUser.email.trim() || !selectedUser.password.trim()) {
+      toast({
+        title: 'Erro na atualização',
+        description: 'Todos os campos devem ser preenchidos.',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+      return false; // Se algum campo estiver vazio, retorna falso
+    }
+    return true; // Se todos os campos estiverem preenchidos, retorna verdadeiro
+  };
+
   // Função para atualizar o usuário
   const handleUpdate = async (userId) => {
+
+    if (!validateForm()) return; // Valida antes de tentar atualizar
+
     try {
       const updatedUser = await updateUser(userId, selectedUser, token); // Passa o objeto atualizado
       console.log('Updated User:', updatedUser);
@@ -237,6 +255,7 @@ const ManageUsers = () => {
                 onChange={handleInputChange}
                 placeholder="Senha"
                 type="password"
+                required
               />
             </FormControl>
           </ModalBody>
