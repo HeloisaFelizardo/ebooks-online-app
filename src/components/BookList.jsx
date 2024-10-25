@@ -6,25 +6,21 @@ import {useAuth} from "../hooks/useAuth.js";
 const BookList = ({books}) => {
   const {token} = useAuth();
 
-  const handleDownload = async (bookId) => {
+  const handleDownload = async (bookId, bookTitle) => {
     try {
       const blob = await downloadBook(bookId, token); //  Receba o Blob diretamente da função downloadBook
       console.log(blob);
 
-      // Certifica-se de que o blob está no formato correto (application/pdf)
-      const url = window.URL.createObjectURL(new Blob([blob], { type: 'application/pdf' }));
+      const url = window.URL.createObjectURL(blob); // Cria uma URL para o Blob
 
-      // Exibe a URL gerada no console
-      console.log('URL gerada:', url);
+      // Abre o PDF em uma nova aba
+      window.open(url, '_blank');
 
-      // Cria um link temporário para o download
+      // Se você também quiser baixar, descomente a parte abaixo
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'download.pdf';  // Nome do arquivo
+      a.download = `${bookTitle}.pdf`; // Nome do arquivo para download
       a.click();
-
-      // Libera o URL após o uso
-      window.URL.revokeObjectURL(url);
 
     } catch (error) {
       console.error("Erro ao baixar o PDF:", error);
@@ -40,8 +36,8 @@ const BookList = ({books}) => {
             key={book._id}
             title={book.title}
             author={book.author}
-            coverUrl={book.coverUrl}
-            onDownload={() => handleDownload(book._id)}
+            coverUrl={book.coverUrl.data}
+            onDownload={() => handleDownload(book._id,  book.title)}
           />
         ))}
       </SimpleGrid>
