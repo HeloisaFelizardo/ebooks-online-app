@@ -31,10 +31,6 @@ export const downloadBook = async (bookId, token) => {
         'Authorization': `Bearer ${token}` // Adicione o token de autenticação no cabeçalho
       }
     });
-
-    // Verifica o tipo de conteúdo retornado pela API
-    console.log(response.headers['content-type']);
-
     return response.data;
   } catch (error) {
     console.error("Erro ao fazer download do livro:", error);
