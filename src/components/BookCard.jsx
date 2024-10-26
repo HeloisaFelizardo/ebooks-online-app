@@ -4,7 +4,7 @@ import coverImage from '../assets/images/cover.jpg';
 const BookCard = ({ title, author, coverUrl, onDownload }) => {
   return (
     <Box borderWidth="1px" borderRadius="lg" boxShadow="md" overflow="hidden" p={4} m={4}>
-      <Image src={coverImage} alt={title} />
+      <Image src={coverUrl} alt={title} />
       <Text mt={2} fontWeight="bold">{title}</Text>
       <Text>{author}</Text>
       <Button mt={4} colorScheme="teal" onClick={onDownload}>
