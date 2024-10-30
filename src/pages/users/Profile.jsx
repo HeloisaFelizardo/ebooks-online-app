@@ -1,26 +1,50 @@
-import { Box, Button, Input, Heading, Link, Text, FormLabel, FormControl, FormErrorMessage } from '@chakra-ui/react';
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import {
+  Box,
+  Button,
+  Input,
+  Heading,
+  Link,
+  Text,
+  FormLabel,
+  FormControl,
+  FormErrorMessage,
+  useToast, Flex, Spinner
+} from '@chakra-ui/react';
+import {useState, useEffect} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {useAuth} from "../../hooks/useAuth.js";
+import {deleteUser, fetchUserById, fetchUsers, updateUser} from "../../services/userService.js";
 
 const Profile = () => {
+  const toast = useToast();
+  const {token, userId} = useAuth();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: ''
   });
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState({});
 
+  const loadUser = async () => {
+    try {
+      const userData = await fetchUserById(userId, token);
+
+      console.log(userData);
+      setFormData({
+        name: userData?.name || '',
+        email: userData?.email || '',
+        password: '',  // mantenha o campo de senha vazio por motivos de segurança
+      });
+    } catch (error) {
+      console.error('Erro ao carregar dados do usuário:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    // Aqui você pode carregar os dados atuais do usuário através de uma requisição à API
-    const fetchUserData = async () => {
-      const userData = {
-        name: 'Heloisa', // Substitua pelos dados reais do usuário
-        email: 'email@email.com'
-      };
-      setFormData(userData);
-    };
-    fetchUserData();
+    loadUser();
   }, []);
 
   const validate = () => {
@@ -39,61 +63,128 @@ const Profile = () => {
     });
   };
 
-  const handleSave = () => {
-    if (validate()) {
-      // Aqui você faria a requisição para salvar os dados atualizados do usuário
+  const handleSave = async () => {
+    if (!validate()) return;
+
+    try {
+      const users = await fetchUsers(token);
+      const userExistsByEmail = users.find((user) => user.email === formData.email);
+
+      // Verifica se o e-mail existe e não é o mesmo do usuário atual
+      if (userExistsByEmail && userExistsByEmail._id !== userId) {
+        setError({ email: 'Email já cadastrado' });
+        toast({
+          title: 'Erro ao atualizar usuário',
+          description: 'O email informado já está cadastrado por outro usuário.',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        });
+        return;
+      }
+
+      // Atualiza o usuário
+      await updateUser(userId, formData, token);
       console.log('Dados atualizados:', formData);
-      // Navega para outra página, se necessário
+
+      toast({
+        title: 'Usuário atualizado',
+        description: `O usuário ${formData.name} foi atualizado com sucesso.`,
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+
       navigate('/');
+    } catch (error) {
+      console.error('Erro ao atualizar usuário:', error);
+      toast({
+        title: 'Erro ao atualizar usuário',
+        description: 'Não foi possível atualizar o usuário.',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
+
+  const handleDelete = async () => {
+    try {
+      await deleteUser(userId, token)
+        toast({
+          title: 'Conta excluída',
+          description: `O usuário ${formData.name} foi excluído com sucesso.`,
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+        });
+      navigate('/login');
+    } catch (error) {
+      console.error('Erro ao atualizar usuário:', error);
+      toast({
+        title: 'Erro ao excluir usuário',
+        description: 'Não foi possível excluir o usuário.',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  }
+
   return (
     <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
-      <Box p={8} maxWidth="400px" borderWidth={1} borderRadius={8} boxShadow="lg" backgroundColor="blackAlpha.500">
-        <Heading as="h2" mb={6} textAlign="center" color="white">Meus Dados</Heading>
-        <FormControl isInvalid={error.name} mb={4}>
-          <FormLabel color="white" fontWeight="thin">Nome:</FormLabel>
-          <Input
-            name="name"
-            placeholder="Nome"
-            color='white'
-            value={formData.name}
-            onChange={handleChange}
-          />
-          {error.name && <FormErrorMessage>{error.name}</FormErrorMessage>}
-        </FormControl>
-        <FormControl isInvalid={error.email} mb={4}>
-          <FormLabel color="white" fontWeight="thin">Email:</FormLabel>
-          <Input
-            name="email"
-            placeholder="Email"
-            color='white'
-            value={formData.email}
-            onChange={handleChange}
-          />
-          {error.email && <FormErrorMessage>{error.email}</FormErrorMessage>}
-        </FormControl>
-        <FormControl isInvalid={error.password} mb={4}>
-          <FormLabel color="white" fontWeight="thin">Nova Senha:</FormLabel>
-          <Input
-            name="password"
-            type="password"
-            placeholder="Nova Senha"
-            color='white'
-            value={formData.password}
-            onChange={handleChange}
-          />
-          {error.password && <FormErrorMessage>{error.password}</FormErrorMessage>}
-        </FormControl>
-        <Button width="full" colorScheme="teal" onClick={handleSave}>Salvar Alterações</Button>
-        <Text mt={4} color="white">
-          Quer voltar para a home?{' '}
-          <Link color="teal.200" onClick={() => navigate('/')}>
-            Clique aqui
-          </Link>
-        </Text>
-      </Box>
+      {loading ? (
+        <Flex justify="center" align="center">
+          <Spinner size="xl" />
+        </Flex>
+      ) : (
+        <Box p={8} maxWidth="400px" borderWidth={1} borderRadius={8} boxShadow="lg" backgroundColor="blackAlpha.500">
+          <Heading as="h2" mb={6} textAlign="center" color="white">Meus Dados</Heading>
+          <FormControl isInvalid={error.name} mb={4}>
+            <FormLabel color="white" fontWeight="thin">Nome:</FormLabel>
+            <Input
+              name="name"
+              placeholder="Nome"
+              color='white'
+              value={formData.name}
+              onChange={handleChange}
+            />
+            {error.name && <FormErrorMessage>{error.name}</FormErrorMessage>}
+          </FormControl>
+          <FormControl isInvalid={error.email} mb={4}>
+            <FormLabel color="white" fontWeight="thin">Email:</FormLabel>
+            <Input
+              name="email"
+              placeholder="Email"
+              color='white'
+              value={formData.email}
+              onChange={handleChange}
+            />
+            {error.email && <FormErrorMessage>{error.email}</FormErrorMessage>}
+          </FormControl>
+          <FormControl isInvalid={error.password} mb={4}>
+            <FormLabel color="white" fontWeight="thin">Nova Senha:</FormLabel>
+            <Input
+              name="password"
+              type="password"
+              placeholder="Nova Senha"
+              color='white'
+              value={formData.password}
+              onChange={handleChange}
+            />
+            {error.password && <FormErrorMessage>{error.password}</FormErrorMessage>}
+          </FormControl>
+          <Button width="full" colorScheme="teal" onClick={handleSave}>Salvar Alterações</Button>
+          <Button width="full" colorScheme="red" mt={4} onClick={handleDelete}>Excluir Conta</Button>
+          <Text mt={4} color="white">
+            Quer voltar para a home?{' '}
+            <Link color="teal.200" onClick={() => navigate('/')}>
+              Clique aqui
+            </Link>
+          </Text>
+        </Box>
+      )}
     </Box>
   );
 };

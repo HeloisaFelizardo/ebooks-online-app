@@ -16,6 +16,7 @@ export const registerUser = async (userData) => {
 // Função para buscar a lista de usuários da API
 export const fetchUsers = async (token) => {
   try {
+    console.log('Token:', token);
     if (!token) {
       throw new Error('Usuário não autenticado!');
     }
@@ -26,11 +27,28 @@ export const fetchUsers = async (token) => {
       },
     });
 
+    console.log('Resposta da API:', response.data);
+
     // Verifica se a resposta contém os usuários e se é um array
     const usersData = response.data.users;
     return Array.isArray(usersData) ? usersData : [];
   } catch (error) {
     console.error('Erro ao buscar usuários:', error);
+    throw error;
+  }
+};
+
+//Função para buscar um usuário pelo id
+export const fetchUserById = async (userId, token) => {
+  try {
+    const response = await api.get(`/users/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Erro ao buscar usuário:', error);
     throw error;
   }
 };

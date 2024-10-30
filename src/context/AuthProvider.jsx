@@ -27,17 +27,18 @@ export const AuthProvider = ({children}) => {
     try {
       const response = await userLogin(credentials); // Faz o login no backend
 
-      const {token} = response; // Extrai o token da resposta
+      const { token, _id: userId, name } = response; // Extrai o token da resposta
 
-      setUser(response); // Armazena o usuário no estado
-      localStorage.setItem('user', JSON.stringify(response)); // Armazena o usuário no localStorage
+      setUser({ ...response, userId }); // Armazena o usuário no estado
+      localStorage.setItem('user', JSON.stringify({ ...response, userId })); // Armazena o usuário no localStorage
       localStorage.setItem('token', token); // Armazena o token no localStorage
+
       console.log("Usuário logado com sucesso", response); // Mensagem de confirmação de login
 
       // Exibe o toast de sucesso
       toast({
         title: 'Login realizado com sucesso.',
-        description: `Bem vindo ${response.name}!`,
+        description: `Bem vindo ${name}!`,
         status: 'success',
         duration: 3000,
         isClosable: true,
@@ -53,7 +54,17 @@ export const AuthProvider = ({children}) => {
     try {
       setUser(null); // Remove o usuário do estado
       localStorage.removeItem('user'); // Remove o usuário do localStorage
+      localStorage.removeItem('token'); // Remove o token do localStorage
+
       console.log("Usuário deslogado com sucesso"); // Mensagem de confirmação de logout
+
+      toast({
+        title: 'Logout realizado',
+        description: 'Você saiu da sua conta com sucesso.',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
     } catch (error) {
       console.error("Erro ao fazer logout", error);
     }
@@ -69,7 +80,7 @@ export const AuthProvider = ({children}) => {
   }
 
   return (
-    <AuthContext.Provider value={{user, login, logout, token: user?.token}}>
+    <AuthContext.Provider value={{user, login, logout, token: user?.token, userId: user?.id}}>
       {children}
     </AuthContext.Provider>
   );
