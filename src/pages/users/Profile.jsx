@@ -13,7 +13,7 @@ import {
 import {useState, useEffect} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {useAuth} from "../../hooks/useAuth.js";
-import {deleteUser, fetchUserById, fetchUsers, updateUser} from "../../services/userService.js";
+import {checkEmailExists, deleteUser, fetchUserById, updateUser} from "../../services/userService.js";
 
 const Profile = () => {
   const toast = useToast();
@@ -67,11 +67,11 @@ const Profile = () => {
     if (!validate()) return;
 
     try {
-      const users = await fetchUsers(token);
-      const userExistsByEmail = users.find((user) => user.email === formData.email);
+      // Verifica se o e-mail já está cadastrado por outro usuário
+      const { emailExists } = await checkEmailExists(token, formData.email, userId);
 
-      // Verifica se o e-mail existe e não é o mesmo do usuário atual
-      if (userExistsByEmail && userExistsByEmail._id !== userId) {
+      // Se o e-mail já existe para outro usuário, mostre um erro
+      if (emailExists) {
         setError({ email: 'Email já cadastrado' });
         toast({
           title: 'Erro ao atualizar usuário',
@@ -83,7 +83,7 @@ const Profile = () => {
         return;
       }
 
-      // Atualiza o usuário
+      // Atualiza o usuário se o e-mail for válido
       await updateUser(userId, formData, token);
       console.log('Dados atualizados:', formData);
 
@@ -107,7 +107,6 @@ const Profile = () => {
       });
     }
   };
-
 
   const handleDelete = async () => {
     try {
