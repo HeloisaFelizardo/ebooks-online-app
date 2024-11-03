@@ -10,31 +10,15 @@ import {
   FormErrorMessage,
   useToast
 } from '@chakra-ui/react';
-import {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {registerUser} from "../services/userService.js";
+import useForm from "../hooks/useForm.js";
 
 const Register = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({name: '', email: '', password: ''});
-  const [error, setError] = useState({});
   const toast = useToast();
 
-  const validate = () => {
-    const newError = {};
-    if (!formData.name) newError.name = 'Nome é obrigatório';
-    if (!formData.email) newError.email = 'Email é obrigatório';
-    if (!formData.password) newError.password = 'Senha é obrigatória';
-    setError(newError);
-    return Object.keys(newError).length === 0;
-  };
-
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
+  const {formData, error, validate, handleChange} = useForm({name: '', email: '', password: ''});
 
   const handleRegister = async () => {
     if (validate()) {

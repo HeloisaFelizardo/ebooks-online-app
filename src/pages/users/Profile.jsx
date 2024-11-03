@@ -14,18 +14,15 @@ import {useState, useEffect} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {useAuth} from "../../hooks/useAuth.js";
 import {checkEmailExists, deleteUser, fetchUserById, updateUser} from "../../services/userService.js";
+import useForm from "../../hooks/useForm.js";
 
 const Profile = () => {
   const toast = useToast();
   const {token, userId} = useAuth();
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: ''
-  });
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState({});
+
+  const {formData, setFormData, error, setError, validate, handleChange} = useForm({name: '', email: '', password: ''});
 
   const loadUser = async () => {
     try {
@@ -39,6 +36,14 @@ const Profile = () => {
       });
     } catch (error) {
       console.error('Erro ao carregar dados do usuário:', error);
+
+      toast({
+        title: 'Erro ao carregar dados do usuário',
+        description: 'Não foi possível carregar os dados do usuário.',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
     } finally {
       setLoading(false);
     }
@@ -47,32 +52,17 @@ const Profile = () => {
     loadUser();
   }, []);
 
-  const validate = () => {
-    const newError = {};
-    if (!formData.name) newError.name = 'Nome é obrigatório';
-    if (!formData.email) newError.email = 'Email é obrigatório';
-    if (!formData.password) newError.password = 'Senha é obrigatória';
-    setError(newError);
-    return Object.keys(newError).length === 0;
-  };
-
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-
   const handleSave = async () => {
     if (!validate()) return;
 
     try {
       // Verifica se o e-mail já está cadastrado por outro usuário
-      const { emailExists } = await checkEmailExists(token, formData.email, userId);
+      const {emailExists} = await checkEmailExists(token, formData.email, userId);
 
       // Se o e-mail já existe para outro usuário, mostre um erro
       if (emailExists) {
-        setError({ email: 'Email já cadastrado' });
+        setError({email: 'Email já cadastrado'});
+
         toast({
           title: 'Erro ao atualizar usuário',
           description: 'O email informado já está cadastrado por outro usuário.',
@@ -98,6 +88,7 @@ const Profile = () => {
       navigate('/');
     } catch (error) {
       console.error('Erro ao atualizar usuário:', error);
+
       toast({
         title: 'Erro ao atualizar usuário',
         description: 'Não foi possível atualizar o usuário.',
@@ -111,16 +102,18 @@ const Profile = () => {
   const handleDelete = async () => {
     try {
       await deleteUser(userId, token)
-        toast({
-          title: 'Conta excluída',
-          description: `O usuário ${formData.name} foi excluído com sucesso.`,
-          status: 'success',
-          duration: 3000,
-          isClosable: true,
-        });
+
+      toast({
+        title: 'Conta excluída',
+        description: `O usuário ${formData.name} foi excluído com sucesso.`,
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
       navigate('/login');
     } catch (error) {
       console.error('Erro ao atualizar usuário:', error);
+
       toast({
         title: 'Erro ao excluir usuário',
         description: 'Não foi possível excluir o usuário.',
@@ -135,7 +128,7 @@ const Profile = () => {
     <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
       {loading ? (
         <Flex justify="center" align="center">
-          <Spinner size="xl" />
+          <Spinner size="xl"/>
         </Flex>
       ) : (
         <Box p={8} maxWidth="400px" borderWidth={1} borderRadius={8} boxShadow="lg" backgroundColor="blackAlpha.500">

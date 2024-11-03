@@ -99,7 +99,7 @@ const Header = () => {
 
 
             {user ? (
-              <Button colorScheme="teal" onClick={handleLogout}>Logout</Button>
+              <Button colorScheme="teal" onClick={handleLogout}>Sair</Button>
             ) : (
               <Button colorScheme="teal" onClick={() => navigate('/login')}>Login</Button>
             )}
