@@ -1,15 +1,16 @@
 // hooks/useForm.js
 import { useState } from 'react';
 
-const useForm = (initialValues) => {
+const useForm = (initialValues, validationRules) => {
   const [formData, setFormData] = useState(initialValues);
   const [error, setError] = useState({});
 
   const validate = () => {
     const newError = {};
-    if (!formData.name) newError.name = 'Nome é obrigatório';
-    if (!formData.email) newError.email = 'Email é obrigatório';
-    if (!formData.password) newError.password = 'Senha é obrigatória';
+    Object.keys(validationRules).forEach((field) => {
+      const errorMessage = validationRules[field](formData[field]);
+      if (errorMessage) newError[field] = errorMessage;
+    });
 
     setError(newError);
     return Object.keys(newError).length === 0;

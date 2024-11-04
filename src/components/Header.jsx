@@ -9,7 +9,7 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
-  MenuGroup
+  MenuGroup, Text
 } from '@chakra-ui/react';
 import {useNavigate} from "react-router-dom";
 import {AddIcon, ArrowBackIcon, DownloadIcon, EditIcon} from "@chakra-ui/icons";
@@ -43,6 +43,8 @@ const Header = () => {
                   </MenuButton>
 
                   <MenuList>
+                    <MenuItem><Text> Bem vindo {user.name}!</Text></MenuItem>
+
                     <MenuItem icon={<ArrowBackIcon/>} onClick={() => navigate('/')}>
                       Início
                     </MenuItem>
@@ -77,7 +79,10 @@ const Header = () => {
                 </MenuButton>
 
                 <MenuList>
+                  <MenuItem><Text> Bem vindo {user.name}!</Text></MenuItem>
+
                   <MenuItem icon={<ArrowBackIcon/>} onClick={() => navigate('/')}>
+
                     Início
                   </MenuItem>
 

@@ -56,22 +56,23 @@ export const fetchUserById = async (userId, token) => {
 // Função para verificar se o e-mail já está registrado
 export const checkEmailExists = async (token, email, userId) => {
   try {
-    const response = await api.post('/users/verify-email', { email, userId }, {
+    const response = await api.post('/users/verify-email', { email, id: userId }, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
-    return response.data; // Supondo que response.data seja `true` ou `false`
+    return { emailExists: response.data.emailExists };
   } catch (error) {
     if (error.response && error.response.status === 400) {
-      console.error('Email já registrado por outro usuário.');
-      return { emailExists: true }; // Retorna uma flag em vez de lançar o erro
-    } else {
-      console.error('Erro ao verificar o email.');
-      throw error; // Lança erros desconhecidos para serem tratados no handleSave
+      // Email já existe por outro usuário
+      return { emailExists: true };
     }
+    console.error('Erro ao verificar o email:', error);
+    throw error; // Lança outros erros para serem tratados no handleSave
   }
 };
+
+
 
 // Função para excluir um usuário da API
 export const deleteUser = async (userId, token) => {

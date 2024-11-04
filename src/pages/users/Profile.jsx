@@ -17,12 +17,23 @@ import {checkEmailExists, deleteUser, fetchUserById, updateUser} from "../../ser
 import useForm from "../../hooks/useForm.js";
 
 const Profile = () => {
+  // Define as regras de validação aqui
+  const validationRules = {
+    name: (value) => (!value ? 'Nome é obrigatório' : ''),
+    email: (value) => (!value ? 'Email é obrigatório' : ''),
+    password: (value) => (!value ? 'Senha é obrigatória' : ''),
+  };
+
+  // Passa `validationRules` como argumento para `useForm`
+  const {formData, setFormData, error, setError, validate, handleChange} = useForm(
+    {name: '', email: '', password: ''},
+    validationRules
+  );
+
   const toast = useToast();
   const {token, userId} = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-
-  const {formData, setFormData, error, setError, validate, handleChange} = useForm({name: '', email: '', password: ''});
 
   const loadUser = async () => {
     try {
