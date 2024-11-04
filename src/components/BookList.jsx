@@ -2,11 +2,19 @@ import {Container, Heading, SimpleGrid} from '@chakra-ui/react';
 import BookCard from './BookCard';
 import {downloadBook} from "../services/bookService.js";
 import {useAuth} from "../hooks/useAuth.js";
+import {useNavigate} from "react-router-dom";
 
 const BookList = ({books}) => {
   const {token} = useAuth();
+  const navigate = useNavigate();
 
   const handleDownload = async (bookId, bookTitle) => {
+    if (!token) {
+      // Redireciona para a tela de login se o usuário não estiver autenticado
+      navigate('/login');
+      return;
+    }
+
     try {
       const blob = await downloadBook(bookId, token); //  Receba o Blob diretamente da função downloadBook
 

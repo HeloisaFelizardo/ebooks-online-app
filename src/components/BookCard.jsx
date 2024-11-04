@@ -1,5 +1,4 @@
 import { Box, Image, Text, Button } from '@chakra-ui/react';
-import coverImage from '../assets/images/cover.jpg';
 
 const BookCard = ({ title, author, coverUrl, onDownload }) => {
   return (

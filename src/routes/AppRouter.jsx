@@ -19,10 +19,10 @@ const AppRouter = () => {
           {/* O Layout é aplicado em todas as rotas */}
           <Route path="/" element={<Layout/>}>
             <Route index element={<Home/>}/>
+            <Route path="/downloads" element={<Downloads/>}/>
 
             {/* Rota protegida para usuários autenticados */}
             <Route element={<ProtectedRoute allowedRoles={['user', 'admin']}/>}>
-              <Route path="/downloads" element={<Downloads/>}/>
               <Route path="/profile" element={<Profile/>}/>
             </Route>
 
