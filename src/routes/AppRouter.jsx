@@ -9,6 +9,7 @@ import Register from "../pages/Register.jsx";
 import Profile from "../pages/users/Profile.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
 import {AuthProvider} from "../context/AuthProvider.jsx";
+import BibliotecaPDF from "../pages/BibliotecaPDF.jsx";
 
 
 const AppRouter = () => {
@@ -20,6 +21,7 @@ const AppRouter = () => {
           <Route path="/" element={<Layout/>}>
             <Route index element={<Home/>}/>
             <Route path="/downloads" element={<Downloads/>}/>
+            <Route path="/example" element={<BibliotecaPDF/>}/>
 
             {/* Rota protegida para usuários autenticados */}
             <Route element={<ProtectedRoute allowedRoles={['user', 'admin']}/>}>

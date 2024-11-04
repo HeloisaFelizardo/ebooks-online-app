@@ -60,10 +60,15 @@ export const getBooksByTitle = async (title) => {
   }
 };
 
-//função para postar livros
-export const postBook = async (bookData) => {
+// função para postar livros
+export const postBook = async (bookData, token) => {
   try {
-    const response = await api.post("/books", bookData);
+    const response = await api.post("/books/upload", bookData, {
+      headers: {
+        Authorization: `Bearer ${token}`,  // Inclui o token no cabeçalho de autorização
+        'Content-Type': 'multipart/form-data' // Define o Content-Type para upload de arquivos
+      },
+    });
     return response.data;
   } catch (error) {
     console.error("Erro ao postar livro:", error);

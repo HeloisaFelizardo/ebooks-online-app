@@ -72,8 +72,6 @@ export const checkEmailExists = async (token, email, userId) => {
   }
 };
 
-
-
 // Função para excluir um usuário da API
 export const deleteUser = async (userId, token) => {
   try {
