@@ -9,10 +9,8 @@ import {
   Td,
   Button,
   Heading,
-  Spinner,
   useToast,
   Container,
-  Flex,
   Modal,
   ModalContent,
   ModalOverlay,
@@ -27,6 +25,7 @@ import {
 } from '@chakra-ui/react';
 import {useAuth} from "../../hooks/useAuth.js";
 import {deleteUser, fetchUsers, updateUser} from "../../services/userService.js";
+import LoadingSpinner from "../../components/LoadingSpinner.jsx";
 
 const ManageUsers = () => {
   const [users, setUsers] = useState([]);
@@ -151,9 +150,7 @@ const ManageUsers = () => {
       <Box>
         <Heading as="h1" mb={6}>Gerenciar Usuários</Heading>
         {loading ? (
-          <Flex justify="center" align="center">
-            <Spinner size="xl"/>
-          </Flex>
+         <LoadingSpinner />
         ) : (
           <Table variant="simple">
             <Thead>

@@ -1,7 +1,9 @@
 import {createContext, useState, useEffect} from 'react';
-import {Spinner, Flex, useToast} from '@chakra-ui/react'; // Importe o Spinner do Chakra UI
+import {useToast} from '@chakra-ui/react'; // Importe o Spinner do Chakra UI
 import PropTypes from 'prop-types';
-import {userLogin} from "../services/userService.js";// Importe a função de login do seu serviço de usuário
+import {userLogin} from "../services/userService.js";
+import LoadingSpinner from "../components/LoadingSpinner.jsx";
+// Importe a função de login do seu serviço de usuário
 
 export const AuthContext = createContext();
 
@@ -70,14 +72,7 @@ export const AuthProvider = ({children}) => {
     }
   };
 
-  if (loading) {
-    // Exibe o Spinner enquanto os dados estão carregando
-    return (
-      <Flex justify="center" align="center" height="100vh">
-        <Spinner size="xl"/>
-      </Flex>
-    );
-  }
+  if (loading) return <LoadingSpinner />;
 
   return (
     <AuthContext.Provider value={{user, login, logout, token: user?.token, userId: user?.id}}>

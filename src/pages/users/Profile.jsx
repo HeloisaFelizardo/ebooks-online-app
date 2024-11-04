@@ -8,16 +8,16 @@ import {
   FormLabel,
   FormControl,
   FormErrorMessage,
-  useToast, Flex, Spinner
+  useToast
 } from '@chakra-ui/react';
 import {useState, useEffect} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {useAuth} from "../../hooks/useAuth.js";
 import {checkEmailExists, deleteUser, fetchUserById, updateUser} from "../../services/userService.js";
 import useForm from "../../hooks/useForm.js";
+import LoadingSpinner from "../../components/LoadingSpinner.jsx";
 
 const Profile = () => {
-  // Define as regras de validação aqui
   const validationRules = {
     name: (value) => (!value ? 'Nome é obrigatório' : ''),
     email: (value) => (!value ? 'Email é obrigatório' : ''),
@@ -138,9 +138,7 @@ const Profile = () => {
   return (
     <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
       {loading ? (
-        <Flex justify="center" align="center">
-          <Spinner size="xl"/>
-        </Flex>
+        <LoadingSpinner/>
       ) : (
         <Box p={8} maxWidth="400px" borderWidth={1} borderRadius={8} boxShadow="lg" backgroundColor="blackAlpha.500">
           <Heading as="h2" mb={6} textAlign="center" color="white">Meus Dados</Heading>

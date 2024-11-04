@@ -1,7 +1,7 @@
 import BookList from '../../components/BookList.jsx';
 import {useEffect, useState} from "react";
 import {getBooks} from "../../services/bookService.js";
-import {Flex, Spinner} from "@chakra-ui/react";
+import LoadingSpinner from "../../components/LoadingSpinner.jsx";
 
 const Downloads = () => {
   const [books, setBooks] = useState([]);
@@ -22,11 +22,7 @@ const Downloads = () => {
     loadBooks();
   }, []);
 
-  if (loading) {
-    return <Flex justify="center" align="center" height='50vh'>
-      <Spinner size="xl"/>
-    </Flex>
-  }
+  if (loading) return <LoadingSpinner />;
 
   return (
     <BookList books={books}/>
