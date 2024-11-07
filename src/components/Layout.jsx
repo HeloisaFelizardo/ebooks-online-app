@@ -6,11 +6,14 @@ import {Box, Flex} from "@chakra-ui/react";
 const Layout = () => {
   const location = useLocation();
 
+  //Verifica se a página atual é a home
+  const isHomePage = location.pathname === '/';
+
   // Verifica se a página atual é a de login
   const isLoginPage = location.pathname === '/login';
 
   return (
-    <Flex direction="column" minHeight="100vh">
+    <Flex direction="column" minHeight="100vh" className={isHomePage ? 'home-background' : ''}>
       {/* Renderiza o Header em todas as páginas, exceto na de login */}
       {!isLoginPage && <Header/>}
 

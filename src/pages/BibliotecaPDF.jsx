@@ -26,7 +26,7 @@ export default function BibliotecaPDF() {
         <Container maxW="container.xl">
           <Flex justify="space-between" align="center">
             <Flex align="center">
-              <FaBook  boxSize={6} mr={2} />
+              <FaBook   mr={2} />
               <Heading as="h1" size="lg">
                 BibliotecaPDF
               </Heading>
@@ -72,7 +72,7 @@ export default function BibliotecaPDF() {
               <Image
                 src="/placeholder.svg?height=300&width=200"
                 alt="Capa do livro em destaque"
-                boxSize="300px"
+                width="300px"
                 objectFit="cover"
                 borderRadius="md"
                 mr={{ base: 0, md: 6 }}

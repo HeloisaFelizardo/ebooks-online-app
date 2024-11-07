@@ -146,11 +146,11 @@ const ManageUsers = () => {
   }, []);
 
   return (
-    <Container maxW="container.xl" backgroundColor="white" p={10} boxShadow="xl">
+    <Container maxW="container.xl" p={10}>
       <Box>
         <Heading as="h1" mb={6}>Gerenciar Usuários</Heading>
         {loading ? (
-         <LoadingSpinner />
+          <LoadingSpinner/>
         ) : (
           <Table variant="simple">
             <Thead>

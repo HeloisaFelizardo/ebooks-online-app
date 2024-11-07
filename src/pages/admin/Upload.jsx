@@ -89,7 +89,7 @@ const Upload = () => {
   };
 
   return (
-    <Container maxW="container.xl" backgroundColor="white" p={10} boxShadow="xl">
+    <Container maxW="container.xl" p={10}>
       <Box as="form" onSubmit={handleSubmit}>
         <Heading as="h3" mb={6}>Upload de Livros PDF</Heading>
 
@@ -118,7 +118,7 @@ const Upload = () => {
         </FormControl>
 
         <Button colorScheme="teal" type="submit">
-          {loading ? <Spinner size="sm" /> : "Enviar"}
+          {loading ? <Spinner size="sm"/> : "Enviar"}
         </Button>
       </Box>
     </Container>

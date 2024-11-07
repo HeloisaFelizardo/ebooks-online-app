@@ -2,6 +2,9 @@ import BookList from '../../components/BookList.jsx';
 import {useEffect, useState} from "react";
 import {getBooks} from "../../services/bookService.js";
 import LoadingSpinner from "../../components/LoadingSpinner.jsx";
+import {Box} from "@chakra-ui/react";
+import {Highlights} from "../../components/Highlights.jsx";
+import {Search} from "../../components/Search.jsx";
 
 const Downloads = () => {
   const [books, setBooks] = useState([]);
@@ -22,10 +25,14 @@ const Downloads = () => {
     loadBooks();
   }, []);
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <LoadingSpinner/>;
 
   return (
-    <BookList books={books}/>
+    <Box minHeight="100vh" display="flex" flexDirection="column">
+      <Search />
+      <Highlights />
+      <BookList books={books}/>
+    </Box>
   );
 };
 

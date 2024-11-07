@@ -1,4 +1,4 @@
-import { extendTheme } from '@chakra-ui/react';
+import {extendTheme} from '@chakra-ui/react';
 
 const theme = extendTheme({
   fonts: {
@@ -7,12 +7,12 @@ const theme = extendTheme({
     buttons: 'Poppins, Arial, sans-serif',
   },
   styles: {
-    global: {
+    global: (props) => ({
       body: {
-        bg: 'none', // exemplo de cor de fundo global
+        bg: props.colorMode === 'dark' ? 'gray.900' : 'gray.50',
         color: 'gray.600',
       },
-    },
+    }),
   },
 });
 

@@ -8,6 +8,7 @@ const Login = () => {
   const {login} = useAuth();
   const [credentials, setCredentials] = useState({email: '', password: ''});
   const [error, setError] = useState({email: '', password: '', general: ''});
+  const [loading, setLoading] = useState(true);
 
   const handleChange = (e) => {
     const {name, value} = e.target;
@@ -30,11 +31,13 @@ const Login = () => {
       navigate('/downloads');
     } catch (error) {
       setError(({...error, general: 'Falha no login. Verifique suas credenciais.'}));
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+    <Box display="flex" justifyContent="center" alignItems="center" height="100vh" className='home-background'>
       <Box p={8} maxWidth="400px" borderWidth={1} borderRadius={8} boxShadow="lg" backgroundColor="blackAlpha.500">
         <Heading as="h2" mb={6} textAlign="center" color="white">Login</Heading>
         <FormControl isInvalid={error.email} mb={4} isRequired>

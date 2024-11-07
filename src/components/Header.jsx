@@ -14,6 +14,7 @@ import {
 import {useNavigate} from "react-router-dom";
 import {AddIcon, ArrowBackIcon, DownloadIcon, EditIcon} from "@chakra-ui/icons";
 import {useAuth} from "../hooks/useAuth.js";
+import {MdLogin, MdLogout, MdMenu} from "react-icons/md";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -25,11 +26,11 @@ const Header = () => {
   };
 
   return (
-    <Box bg="white" p={4} boxShadow="md" zIndex='1' position='relative'>
+    <Box bg="teal.500" p={4} boxShadow="md" zIndex='1' position='relative'>
       <Flex justify="space-between" align="center">
         <Container maxW="container.xl">
           <Flex>
-            <Heading as='h1' color="#BD0000" textShadow="2px 2px 4px rgba(0, 0, 0, 0.5)">
+            <Heading as='h1' color="white">
               Ebooks Online
             </Heading>
             <Spacer/>
@@ -38,7 +39,7 @@ const Header = () => {
             {user && user.role === 'admin' && (
               <>
                 <Menu>
-                  <MenuButton as={Button} colorScheme="teal" variant="outline" mr={4}>
+                  <MenuButton as={Button} leftIcon={<MdMenu/>} variant="ghost" mr={4}>
                     Menu
                   </MenuButton>
 
@@ -74,15 +75,17 @@ const Header = () => {
             {user && user.role === 'user' && (
               <Menu>
 
-                <MenuButton as={Button} colorScheme="teal" variant="outline" mr={4}>
+
+                <MenuButton as={Button} leftIcon={<MdMenu/>} variant="ghost" mr={4}>
                   Menu
                 </MenuButton>
 
                 <MenuList>
-                  <MenuItem><Text> Bem vindo {user.name}!</Text></MenuItem>
+                  <MenuItem>
+                    <Text> Bem vindo {user.name}!</Text>
+                  </MenuItem>
 
                   <MenuItem icon={<ArrowBackIcon/>} onClick={() => navigate('/')}>
-
                     Início
                   </MenuItem>
 
@@ -102,11 +105,10 @@ const Header = () => {
               </Menu>
             )}
 
-
             {user ? (
-              <Button colorScheme="teal" onClick={handleLogout}>Sair</Button>
+              <Button leftIcon={<MdLogout/>} variant="ghost" onClick={handleLogout}>Sair</Button>
             ) : (
-              <Button colorScheme="teal" onClick={() => navigate('/login')}>Login</Button>
+              <Button leftIcon={<MdLogin/>} variant="ghost" onClick={() => navigate('/login')}>Login</Button>
             )}
           </Flex>
         </Container>
