@@ -21,11 +21,12 @@ const Upload = () => {
     title: (value) => (!value ? 'Título é obrigatório' : ''),
     author: (value) => (!value ? 'Autor é obrigatório' : ''),
     cover: (value) => (!value ? 'Capa do livro é obrigatório' : ''),
+    description: (value) => (!value ? 'Descrição é obrigatória' : ''),
     pdf: (value) => (!value ? 'Livro PDF é obrigatório' : ''),
   };
 
   const {formData, error, validate, handleChange} = useForm(
-    {title: '', author: '', cover: null, pdf: null},
+    {title: '', author: '', description: '', cover: null, pdf: null},
     validationRules
   );
 
@@ -42,11 +43,12 @@ const Upload = () => {
 
     if (!validate()) return;
 
-    const {title, author, cover, pdf} = formData;
+    const {title, author, description, cover, pdf} = formData;
 
     const formDataObj = new FormData();
     formDataObj.append('title', title);
     formDataObj.append('author', author);
+    formDataObj.append('description', description);
     formDataObj.append('cover', cover);
     formDataObj.append('pdf', pdf);
 
@@ -103,6 +105,12 @@ const Upload = () => {
           <FormLabel>Autor:</FormLabel>
           <Input type="text" name="author" placeholder="Digite o nome do autor" onChange={handleChange} boxShadow="sm"/>
           {error.author && <FormErrorMessage>{error.author}</FormErrorMessage>}
+        </FormControl>
+
+        <FormControl mb={4} isInvalid={error.description}>
+          <FormLabel>Autor:</FormLabel>
+          <Input type="text" name="description" placeholder="Digite a descrição do livro" onChange={handleChange} boxShadow="sm"/>
+          {error.description && <FormErrorMessage>{error.description}</FormErrorMessage>}
         </FormControl>
 
         <FormControl mb={4} isInvalid={error.cover}>

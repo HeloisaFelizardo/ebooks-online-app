@@ -28,7 +28,7 @@ export const Highlights = ({book}) => {
                 {book.title}
               </Heading>
               <Text mb={4}>
-                F. Scott Fitzgerald nos leva a uma jornada pela alta sociedade americana dos anos 1920.
+                {book.description}
               </Text>
               <Button colorScheme="teal" onClick={() => handleDownload(book._id, book.title)}>Ler Agora</Button>
             </Box>
