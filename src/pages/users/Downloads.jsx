@@ -8,12 +8,17 @@ import {Search} from "../../components/Search.jsx";
 
 const Downloads = () => {
   const [books, setBooks] = useState([]);
+  const [highlightBook, setHighlightBook] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const loadBooks = async () => {
     try {
       const booksData = await getBooks();
       setBooks(booksData);
+
+      // Selecionar um livro aleatório para destaque
+      const randomIndex = Math.floor(Math.random() * booksData.length);
+      setHighlightBook(booksData[randomIndex]);
     } catch (error) {
       console.error(error);
     } finally {
@@ -30,7 +35,7 @@ const Downloads = () => {
   return (
     <Box minHeight="100vh" display="flex" flexDirection="column">
       <Search />
-      <Highlights />
+      <Highlights book={highlightBook} />
       <BookList books={books}/>
     </Box>
   );

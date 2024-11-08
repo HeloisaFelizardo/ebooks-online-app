@@ -1,8 +1,12 @@
 import {Box, Button, Container, Flex, Heading, Image, Text, useColorModeValue} from "@chakra-ui/react";
+import useDownload from "../hooks/useDownload.js";
 
-export const Highlights = () => {
+export const Highlights = ({book}) => {
+  const handleDownload = useDownload();
+  if (!book) return null; // Certifique-se de que o livro existe antes de renderizar
+
   return(
-    <Box as="main" flexGrow={1} >
+    <Box as="main" flexGrow={1}>
       <Container maxW="container.xl" py={8}>
         <Box bg={useColorModeValue('gray.100', 'gray.700')} p={8} borderRadius="lg" mb={12}>
           <Heading as="h2" size="xl" mb={4}>
@@ -10,9 +14,10 @@ export const Highlights = () => {
           </Heading>
           <Flex direction={{ base: 'column', md: 'row' }} align="center">
             <Image
-              src="/placeholder.svg?height=300&width=200"
-              alt="Capa do livro em destaque"
-              boxSize="300px"
+              src={book.coverUrl}
+              alt={`Capa do livro ${book.title}`}
+              width="300px"
+              height="400px"
               objectFit="cover"
               borderRadius="md"
               mr={{ base: 0, md: 6 }}
@@ -20,12 +25,12 @@ export const Highlights = () => {
             />
             <Box>
               <Heading as="h3" size="lg" mb={2}>
-                O Grande Gatsby
+                {book.title}
               </Heading>
               <Text mb={4}>
                 F. Scott Fitzgerald nos leva a uma jornada pela alta sociedade americana dos anos 1920.
               </Text>
-              <Button colorScheme="teal">Ler Agora</Button>
+              <Button colorScheme="teal" onClick={() => handleDownload(book._id, book.title)}>Ler Agora</Button>
             </Box>
           </Flex>
         </Box>
