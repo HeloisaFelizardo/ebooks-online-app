@@ -10,6 +10,7 @@ import Profile from "../pages/users/Profile.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
 import {AuthProvider} from "../context/AuthProvider.jsx";
 import BibliotecaPDF from "../pages/BibliotecaPDF.jsx";
+import {ManageBooks} from "../pages/admin/ManageBooks.jsx";
 
 
 const AppRouter = () => {
@@ -32,6 +33,7 @@ const AppRouter = () => {
             <Route element={<ProtectedRoute allowedRoles={['admin']}/>}>
               <Route path="/admin/upload" element={<Upload/>}/>
               <Route path="/admin/manage-users" element={<ManageUsers/>}/>
+              <Route path="/admin/manage-books" element={<ManageBooks/>}/>
             </Route>
 
           </Route>

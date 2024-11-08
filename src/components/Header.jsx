@@ -64,6 +64,9 @@ const Header = () => {
                       <MenuItem icon={<EditIcon/>} onClick={() => navigate('/admin/manage-users')}>
                         Gerenciar Usuários
                       </MenuItem>
+                      <MenuItem icon={<EditIcon/>} onClick={() => navigate('/admin/manage-books')}>
+                        Gerenciar Livros
+                      </MenuItem>
                     </MenuGroup>
 
                   </MenuList>

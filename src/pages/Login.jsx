@@ -1,4 +1,4 @@
-import {Box, Button, Input, Heading, Link, Text, FormLabel, FormControl, FormErrorMessage} from '@chakra-ui/react';
+import {Box, Button, Input, Heading, Link, Text, FormLabel, FormControl, FormErrorMessage, Spinner} from '@chakra-ui/react';
 import {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {useAuth} from '../hooks/useAuth.js';
@@ -8,7 +8,7 @@ const Login = () => {
   const {login} = useAuth();
   const [credentials, setCredentials] = useState({email: '', password: ''});
   const [error, setError] = useState({email: '', password: '', general: ''});
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const {name, value} = e.target;
@@ -26,11 +26,12 @@ const Login = () => {
   const handleLogin = async () => {
     if (!validate()) return;
 
+    setLoading(true);
     try {
       await login(credentials);
       navigate('/downloads');
-    } catch (error) {
-      setError(({...error, general: 'Falha no login. Verifique suas credenciais.'}));
+    } catch (err) {
+      setError({...err, general: 'Falha no login. Verifique suas credenciais.'});
     } finally {
       setLoading(false);
     }
@@ -51,6 +52,7 @@ const Login = () => {
             value={credentials.email}
             onChange={handleChange}
             autoComplete="email"
+            autoFocus
           />
           {error.email && <FormErrorMessage>{error.email}</FormErrorMessage>}
         </FormControl>
@@ -70,7 +72,9 @@ const Login = () => {
           {error.password && <FormErrorMessage>{error.password}</FormErrorMessage>}
         </FormControl>
         {error.general && <Text color="red.500" mb={4}>{error.general}</Text>}
-        <Button width="full" colorScheme="teal" onClick={handleLogin}>Entrar</Button>
+        <Button width="full" colorScheme="teal" onClick={handleLogin} isLoading={loading}>
+          {loading ? <Spinner size="sm" /> : 'Entrar'}
+        </Button>
         <Text mt={4} color="white">
           Não tem conta?{' '}
           <Link color="teal.200" onClick={() => navigate('/register')}>Crie uma conta</Link>
