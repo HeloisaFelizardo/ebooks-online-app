@@ -16,7 +16,6 @@ export const registerUser = async (userData) => {
 // Função para buscar a lista de usuários da API
 export const fetchUsers = async (token) => {
   try {
-    console.log('Token:', token);
     if (!token) {
       throw new Error('Usuário não autenticado!');
     }

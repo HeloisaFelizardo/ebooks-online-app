@@ -7,35 +7,48 @@ import {
   FormLabel,
   FormControl,
   useToast,
-  FormErrorMessage, Spinner
+  FormErrorMessage,
+  Spinner,
+  Icon
 } from '@chakra-ui/react';
-import {postBook} from "../../services/bookService.js";
+import { postBook } from "../../services/bookService.js";
 import useForm from "../../hooks/useForm.js";
-import {useAuth} from "../../hooks/useAuth.js";
-import {useState} from "react";
+import { useAuth } from "../../hooks/useAuth.js";
+import { useState, useRef } from "react";
+import { HiUpload } from "react-icons/hi";
 
 const Upload = () => {
   const [loading, setLoading] = useState(false);
+  const [coverName, setCoverName] = useState("");
+  const [pdfName, setPdfName] = useState("");
+
+  const coverInputRef = useRef();
+  const pdfInputRef = useRef();
 
   const validationRules = {
     title: (value) => (!value ? 'Título é obrigatório' : ''),
     author: (value) => (!value ? 'Autor é obrigatório' : ''),
-    cover: (value) => (!value ? 'Capa do livro é obrigatório' : ''),
+    cover: (value) => (!value ? 'Capa do livro é obrigatória' : ''),
     description: (value) => (!value ? 'Descrição é obrigatória' : ''),
     pdf: (value) => (!value ? 'Livro PDF é obrigatório' : ''),
   };
 
-  const {formData, error, validate, handleChange} = useForm(
-    {title: '', author: '', description: '', cover: null, pdf: null},
+  const { formData, error, validate, handleChange } = useForm(
+    { title: '', author: '', description: '', cover: null, pdf: null },
     validationRules
   );
 
   const toast = useToast();
-  const {token} = useAuth();
+  const { token } = useAuth();
 
   const handleFileChange = (event) => {
-    const {name, files} = event.target;
-    handleChange({target: {name, value: files[0]}});
+    const { name, files } = event.target;
+    const file = files[0];
+    if (file) {
+      handleChange({ target: { name, value: file } });
+      if (name === "cover") setCoverName(file.name);
+      if (name === "pdf") setPdfName(file.name);
+    }
   };
 
   const handleSubmit = async (event) => {
@@ -43,7 +56,7 @@ const Upload = () => {
 
     if (!validate()) return;
 
-    const {title, author, description, cover, pdf} = formData;
+    const { title, author, description, cover, pdf } = formData;
 
     const formDataObj = new FormData();
     formDataObj.append('title', title);
@@ -66,25 +79,19 @@ const Upload = () => {
         isClosable: true,
       });
     } catch (e) {
-      if (e.response && e.response.status === 400 && e.response.data.error === 'Livro já cadastrado.') {
-        toast({
-          title: 'Erro no upload',
-          description: 'Esse livro já foi cadastrado.',
-          status: 'error',
-          duration: 5000,
-          isClosable: true,
-        });
-      } else {
-        console.error("Erro ao fazer upload do livro:", e);
+      const message = e.response?.status === 400 && e.response.data.error === 'Livro já cadastrado.'
+        ? 'Esse livro já foi cadastrado.'
+        : e.response?.status === 403
+          ? 'Você precisa estar logado para fazer upload de livros.'
+          : 'Algo deu errado ao fazer upload do livro.';
 
-        toast({
-          title: 'Erro no upload',
-          description: 'Algo deu errado ao fazer upload do livro.',
-          status: 'error',
-          duration: 5000,
-          isClosable: true,
-        });
-      }
+      toast({
+        title: 'Erro no upload',
+        description: message,
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
     } finally {
       setLoading(false);
     }
@@ -108,24 +115,44 @@ const Upload = () => {
         </FormControl>
 
         <FormControl mb={4} isInvalid={error.description}>
-          <FormLabel>Autor:</FormLabel>
+          <FormLabel>Descrição:</FormLabel>
           <Input type="text" name="description" placeholder="Digite a descrição do livro" onChange={handleChange} boxShadow="sm"/>
           {error.description && <FormErrorMessage>{error.description}</FormErrorMessage>}
         </FormControl>
 
         <FormControl mb={4} isInvalid={error.cover}>
           <FormLabel>Capa:</FormLabel>
-          <Input type="file" accept="image/*" name="cover" boxShadow="sm" onChange={handleFileChange}/>
+          <Input
+            type="file"
+            accept="image/*"
+            name="cover"
+            ref={coverInputRef}
+            onChange={handleFileChange}
+            style={{ display: 'none' }}
+          />
+          <Button onClick={() => coverInputRef.current.click()} leftIcon={<Icon as={HiUpload} />}>
+            {coverName || 'Selecionar Capa'}
+          </Button>
           {error.cover && <FormErrorMessage>{error.cover}</FormErrorMessage>}
         </FormControl>
 
         <FormControl mb={4} isInvalid={error.pdf}>
           <FormLabel>Arquivo PDF:</FormLabel>
-          <Input type="file" accept="application/pdf" name="pdf" boxShadow="sm" onChange={handleFileChange}/>
+          <Input
+            type="file"
+            accept="application/pdf"
+            name="pdf"
+            ref={pdfInputRef}
+            onChange={handleFileChange}
+            style={{ display: 'none' }}
+          />
+          <Button onClick={() => pdfInputRef.current.click()} leftIcon={<Icon as={HiUpload} />}>
+            {pdfName || 'Selecionar PDF'}
+          </Button>
           {error.pdf && <FormErrorMessage>{error.pdf}</FormErrorMessage>}
         </FormControl>
 
-        <Button colorScheme="teal" type="submit">
+        <Button colorScheme="teal" type="submit" mt={4} isDisabled={loading}>
           {loading ? <Spinner size="sm"/> : "Enviar"}
         </Button>
       </Box>

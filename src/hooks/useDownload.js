@@ -36,8 +36,8 @@ const useDownload = () => {
       if (error.response && error.response.status === 403) {
         setToken(null); // Limpa o token
         toast({
-          title: 'Não foi possível fazer o download',
-          description: 'Sessão expirada. Faça o login novamente.',
+          title: 'Sessão expirada.',
+          description: 'Você precisa estar logado para fazer download de livros.',
           status: 'error',
           duration: 5000,
           isClosable: true,
