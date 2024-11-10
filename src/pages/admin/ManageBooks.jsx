@@ -105,9 +105,6 @@ export const ManageBooks = () => {
     setLoader(true);
     try {
       const response = await updateBook(id, formDataObj, token);
-      // Atualize o título no estado local
-      await loadBooks();
-      setSelectedBook((prevBook) => ({...prevBook, title: formData.title}));
       console.log("Livro atualizado com sucesso:", response);
       toast({
         title: "Sucesso!",
@@ -116,6 +113,7 @@ export const ManageBooks = () => {
         duration: 3000,
         isClosable: true,
       });
+      await loadBooks(); // Recarregar os livros
       onClose();
     } catch (e) {
       const message = e.response?.status === 400 && e.response.data.error === "Livro já cadastrado."
@@ -136,15 +134,28 @@ export const ManageBooks = () => {
     }
   };
 
-  /*useEffect(() => {
-    loadBooks;
-  }, []);*/
+
+  const handleDeleteConfirmation = (book) => {
+    setSelectedBook(book);
+    onDeleteOpen();
+  };
 
   const handleDelete = async (id) => {
-    console.log(`Deletar livro com ID ${id}`);
+    if (typeof id !== "string") {
+      console.error("O ID do livro é inválido:", id);
+      return;
+    }
     try {
-      const response = await deleteBook(id, token);
-      console.log("Livro deletado com sucesso:", response);
+      await deleteBook(id, token);
+      toast({
+        title: "Sucesso!",
+        description: "Livro deletado com sucesso.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+      await loadBooks(); // Recarregar os livros após exclusão
+      onDeleteClose();
     } catch (e) {
       console.error("Erro ao deletar livro:", e);
       toast({
@@ -154,11 +165,12 @@ export const ManageBooks = () => {
         duration: 5000,
         isClosable: true,
       });
-    } finally {
-        onDeleteClose();
-        await loadBooks();
     }
   };
+
+  useEffect(() => {
+    loadBooks();
+  }, []);
 
   if (loading) return <LoadingSpinner/>;
 
@@ -179,7 +191,7 @@ export const ManageBooks = () => {
         <Box key={book._id} bg="gray.100" p={3} borderRadius="md" mb={2}>
           <Grid templateColumns="repeat(4, 1fr)" gap={4} alignItems="center">
             <GridItem>
-              <Image src={book.coverUrl} alt={book.title} boxSize="50px"/>
+              <Image src={book.coverUrl} alt={book.title} width="50px"/>
             </GridItem>
             <GridItem>
               <Text>{book.title}</Text>
@@ -192,7 +204,7 @@ export const ManageBooks = () => {
                 <Button colorScheme="blue" onClick={() => handleOpenUpdateModal(book)}>
                   <MdEdit/>
                 </Button>
-                <Button colorScheme="red" onClick={onDeleteOpen}>
+                <Button colorScheme="red" onClick={() => handleDeleteConfirmation(book)}>
                   <MdDelete/>
                 </Button>
               </ButtonGroup>
@@ -291,7 +303,7 @@ export const ManageBooks = () => {
         <ModalContent>
           <ModalHeader>Confirmar Exclusão</ModalHeader>
           <ModalCloseButton/>
-          <ModalBody>Deseja realmente excluir o livro?</ModalBody>
+          <ModalBody>Deseja realmente excluir o livro {selectedBook.title} ?</ModalBody>
 
           <ModalFooter>
             <Button colorScheme="blue" onClick={() => handleDelete(selectedBook._id)} mr={3}>

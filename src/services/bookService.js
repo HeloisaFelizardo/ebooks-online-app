@@ -77,9 +77,9 @@ export const postBook = async (bookData, token) => {
 };
 
 // Função para editar livros no frontend
-export const updateBook = async (id, formData, token) => {
+export const updateBook = async (bookId, formData, token) => {
   try {
-    const response = await api.patch(`/books/${id}`, formData, {
+    const response = await api.patch(`/books/${bookId}`, formData, {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'multipart/form-data', // Certifique-se de que o tipo de conteúdo é multipart/form-data
@@ -94,10 +94,14 @@ export const updateBook = async (id, formData, token) => {
 };
 
 //função para deletar livros
-export const deleteBook = async (bookId) => {
+export const deleteBook = async (bookId, token) => {
   try {
-    await api.delete(`/books/${bookId}`);
-    console.log("Livro deletado com sucesso:", bookId);
+    const response = await api.delete(`/books/${bookId}`,  {
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+    });
+    console.log("Livro deletado com sucesso:", bookId, response.data);
   } catch (error) {
     console.error("Erro ao deletar livro:", error);
     throw error;
