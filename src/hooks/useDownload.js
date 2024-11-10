@@ -8,7 +8,7 @@ const useDownload = () => {
   const toast = useToast();
   const navigate = useNavigate();
 
-  return async (bookId) => {
+  return async (bookId, fileName) => {
     if (!token) {
       navigate('/login');
       toast({
@@ -25,8 +25,19 @@ const useDownload = () => {
       const blob = await downloadBook(bookId, token);
       const url = window.URL.createObjectURL(blob);
 
-      // Abrir o PDF em uma nova aba para leitura
-      window.open(url, '_blank');
+      // Defina o nome do arquivo para download, se necessário
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = fileName || "document.pdf"; // Define o nome do arquivo
+      a.style.display = "none";
+      document.body.appendChild(a);
+      a.click();  // Aciona o download automaticamente
+
+      // Limpa o link temporário
+      document.body.removeChild(a);
+
+      // Abrir em uma nova aba com o PDF
+      window.open(url, "_blank");
 
       // A URL do Blob será revogada após um pequeno tempo para liberar memória
       setTimeout(() => window.URL.revokeObjectURL(url), 5000);

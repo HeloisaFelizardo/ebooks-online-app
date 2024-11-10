@@ -25,7 +25,7 @@ export const getBookById = async (bookId) => {
 //função para fazer download do livro
 export const downloadBook = async (bookId, token) => {
   try {
-    const response = await api.get(`/books/${bookId}/download`, {
+    const response = await api.get(`/books/download/${bookId}`, {
       responseType: "blob",
       headers: {
         'Authorization': `Bearer ${token}` // Adicione o token de autenticação no cabeçalho
@@ -76,14 +76,20 @@ export const postBook = async (bookData, token) => {
   }
 };
 
-//função para editar livros
-export const updateBook = async (bookId, bookData) => {
+// Função para editar livros no frontend
+export const updateBook = async (id, formData, token) => {
   try {
-    const response = await api.put(`/books/${bookId}`, bookData);
-    return response.data;
+    const response = await api.patch(`/books/${id}`, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'multipart/form-data', // Certifique-se de que o tipo de conteúdo é multipart/form-data
+      },
+    });
+    console.log("Livro atualizado com sucesso:", response.data);
+    return response.data; // Retorna a resposta de sucesso
   } catch (error) {
-    console.error("Erro ao editar livro:", error);
-    throw error;
+    console.error("Erro ao editar livro:", error); // Log do erro para depuração
+    throw error; // Relança o erro para ser tratado em outro lugar
   }
 };
 
@@ -91,6 +97,7 @@ export const updateBook = async (bookId, bookData) => {
 export const deleteBook = async (bookId) => {
   try {
     await api.delete(`/books/${bookId}`);
+    console.log("Livro deletado com sucesso:", bookId);
   } catch (error) {
     console.error("Erro ao deletar livro:", error);
     throw error;
