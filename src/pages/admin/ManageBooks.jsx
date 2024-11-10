@@ -21,7 +21,7 @@ import {
   Icon,
   FormErrorMessage,
   useToast,
-  useDisclosure, Spinner
+  useDisclosure
 } from "@chakra-ui/react";
 import {useEffect, useRef, useState} from "react";
 import {deleteBook, updateBook} from "../../services/bookService.js";
@@ -33,7 +33,7 @@ import {MdDelete, MdEdit} from "react-icons/md";
 import LoadingSpinner from "../../components/LoadingSpinner.jsx";
 
 export const ManageBooks = () => {
-  const {books, loading} = useBooks(); // Supondo que você tenha hook para buscar livros
+  const {books, loading, loadBooks} = useBooks(); // Supondo que você tenha hook para buscar livros
   const initialRef = useRef(null);
   const {isOpen, onOpen, onClose} = useDisclosure();
   const {
@@ -47,7 +47,6 @@ export const ManageBooks = () => {
   const [loader, setLoader] = useState(false);
   const toast = useToast();
   const {token} = useAuth();
-  const {loadBooks} = useBooks();
 
   const coverInputRef = useRef();
   const pdfInputRef = useRef();
@@ -134,7 +133,6 @@ export const ManageBooks = () => {
     }
   };
 
-
   const handleDeleteConfirmation = (book) => {
     setSelectedBook(book);
     onDeleteOpen();
@@ -154,6 +152,7 @@ export const ManageBooks = () => {
         duration: 3000,
         isClosable: true,
       });
+      setLoader(true);
       await loadBooks(); // Recarregar os livros após exclusão
       onDeleteClose();
     } catch (e) {
@@ -165,6 +164,8 @@ export const ManageBooks = () => {
         duration: 5000,
         isClosable: true,
       });
+    } finally {
+      setLoader(false);
     }
   };
 
@@ -290,12 +291,11 @@ export const ManageBooks = () => {
           <ModalFooter>
             <Button variant="ghost" onClick={onClose}>Cancelar</Button>
             <Button colorScheme="blue" onClick={() => handleUpdate(selectedBook._id)} isLoading={loader}>
-              {loading ? <Spinner size="sm"/> : "Salvar"}
+              Salvar
             </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
-
 
       {/*Modal dialog delete*/}
       <Modal closeOnOverlayClick={false} isOpen={isDeleteOpen} onClose={onDeleteClose}>
@@ -306,8 +306,8 @@ export const ManageBooks = () => {
           <ModalBody>Deseja realmente excluir o livro {selectedBook.title} ?</ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="blue" onClick={() => handleDelete(selectedBook._id)} mr={3}>
-              {loading ? <Spinner size="sm"/> : "Confirmar"}
+            <Button colorScheme="blue" onClick={() => handleDelete(selectedBook._id)} mr={3} isLoading={loader}>
+              Confirmar
             </Button>
             <Button onClick={onDeleteClose}>Cancelar</Button>
           </ModalFooter>
