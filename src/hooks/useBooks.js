@@ -26,7 +26,7 @@ const useBooks = () => {
     loadBooks();
   }, []);
 
-  return { books, highlightBook, loading };
+  return { books, highlightBook, loading, loadBooks };
 };
 
 export default useBooks;

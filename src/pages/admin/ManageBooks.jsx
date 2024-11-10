@@ -21,56 +21,49 @@ import {
   Icon,
   FormErrorMessage,
   useToast,
-  Spinner,
-  useDisclosure
+  useDisclosure, Spinner
 } from "@chakra-ui/react";
-import { useRef, useState } from "react";
-import useBooks from "../../hooks/useBooks.js";
-import LoadingSpinner from "../../components/LoadingSpinner.jsx";
-import { MdDelete, MdEdit } from "react-icons/md";
-import { HiUpload } from "react-icons/hi";
+import {useEffect, useRef, useState} from "react";
+import {deleteBook, updateBook} from "../../services/bookService.js";
 import useForm from "../../hooks/useForm.js";
-import { useAuth } from "../../hooks/useAuth.js";
-import { updateBook } from "../../services/bookService.js";
+import {useAuth} from "../../hooks/useAuth.js";
+import {HiUpload} from "react-icons/hi";
+import useBooks from "../../hooks/useBooks.js";
+import {MdDelete, MdEdit} from "react-icons/md";
+import LoadingSpinner from "../../components/LoadingSpinner.jsx";
 
 export const ManageBooks = () => {
-  const { books, loading } = useBooks();
+  const {books, loading} = useBooks(); // Supondo que você tenha hook para buscar livros
   const initialRef = useRef(null);
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const {isOpen, onOpen, onClose} = useDisclosure();
   const {
     isOpen: isDeleteOpen,
     onOpen: onDeleteOpen,
     onClose: onDeleteClose,
   } = useDisclosure();
   const [selectedBook, setSelectedBook] = useState({});
+  const [coverName, setCoverName] = useState("");
+  const [pdfName, setPdfName] = useState("");
+  const [loader, setLoader] = useState(false);
+  const toast = useToast();
+  const {token} = useAuth();
+  const {loadBooks} = useBooks();
 
   const coverInputRef = useRef();
   const pdfInputRef = useRef();
 
-  const [loader, setLoader] = useState(false);
-  const [coverName, setCoverName] = useState("");
-  const [pdfName, setPdfName] = useState("");
-
+  // Validações dos campos
   const validationRules = {
     title: (value) => (!value ? 'Título é obrigatório' : ''),
     author: (value) => (!value ? 'Autor é obrigatório' : ''),
-    cover: (value) => (!value ? 'Capa do livro é obrigatória' : ''),
     description: (value) => (!value ? 'Descrição é obrigatória' : ''),
-    pdf: (value) => (!value ? 'Livro PDF é obrigatório' : ''),
   };
 
-// Apenas os campos obrigatórios para edição
-  const requiredFields = ["title", "author", "description"];
-
-  const { formData, setFormData, error, validate, handleChange } = useForm(
-    { title: '', author: '', description: '', cover: null, pdf: null },
-    validationRules,
-    requiredFields // Campos obrigatórios para edição
+  // Inicialização do formulário
+  const {formData, setFormData, error, validate, handleChange} = useForm(
+    {title: '', author: '', description: '', cover: null, pdf: null},
+    validationRules
   );
-
-
-  const toast = useToast();
-  const { token } = useAuth();
 
   const handleOpenUpdateModal = (book) => {
     setSelectedBook(book);
@@ -78,70 +71,61 @@ export const ManageBooks = () => {
       title: book.title || "",
       author: book.author || "",
       description: book.description || "",
-      cover: book.cover || null,
-      pdf: book.pdf || null,
+      cover: null, // Deixe o campo de capa e pdf em null inicialmente
+      pdf: null,
     });
+    setCoverName(book.cover ? book.cover.split('/').pop() : "Selecionar Capa");
+    setPdfName(book.pdf ? book.pdf.split('/').pop() : "Selecionar PDF");
     onOpen();
   };
 
-  const handleDelete = async (id) => {
-    console.log(`Deletar livro com ID ${id}`);
-    // Adicione a lógica de exclusão aqui
+  const handleFileChange = (event) => {
+    const {name, files} = event.target;
+    const file = files[0];
+    if (file) {
+      handleChange({target: {name, value: file}});
+      if (name === "cover") setCoverName(file.name);
+      if (name === "pdf") setPdfName(file.name);
+    }
   };
 
   const handleUpdate = async (id) => {
-    console.log("Iniciando handleUpdate");
+    if (!validate()) return;
 
-    onClose();
-
-    if (!validate()) {
-      console.log("Validação falhou");
-      return;
-    }
-
-    const { title, author, description, cover, pdf } = formData;
-
-    console.log("Dados do livro:", { title, author, description, cover, pdf });
-    console.log("ID do livro:", id);
-    console.log("Token:", token);
+    const {title, author, description, cover, pdf} = formData;
 
     const formDataObj = new FormData();
     formDataObj.append("title", title);
     formDataObj.append("author", author);
     formDataObj.append("description", description);
 
-    // Somente adicione os arquivos se eles não estiverem nulos
-    if (cover) formDataObj.append('cover', cover);
-    if (pdf) formDataObj.append('pdf', pdf);
+    if (cover) formDataObj.append("cover", cover);
+    if (pdf) formDataObj.append("pdf", pdf);
 
     setLoader(true);
-
-    // Exibe os dados antes de enviar
-    console.log("Dados a serem enviados:", formData);
-
     try {
       const response = await updateBook(id, formDataObj, token);
-      console.log("Livro enviado com sucesso:", response);
-
+      // Atualize o título no estado local
+      await loadBooks();
+      setSelectedBook((prevBook) => ({...prevBook, title: formData.title}));
+      console.log("Livro atualizado com sucesso:", response);
       toast({
         title: "Sucesso!",
-        description: "Livro registrado com sucesso.",
+        description: "Livro atualizado com sucesso.",
         status: "success",
         duration: 3000,
         isClosable: true,
       });
+      onClose();
     } catch (e) {
-      console.error("Erro ao atualizar o livro:", e);
-
-      const message =
-        e.response?.status === 400 && e.response.data.error === "Livro já cadastrado."
-          ? "Esse livro já foi cadastrado."
-          : e.response?.status === 403
-            ? "Você precisa estar logado para fazer upload de livros."
-            : "Algo deu errado ao fazer upload do livro.";
+      const message = e.response?.status === 400 && e.response.data.error === "Livro já cadastrado."
+        ? "Esse livro já foi cadastrado."
+        : e.response?.status === 403
+          ? "Você precisa estar logado para atualizar livros."
+          : "Algo deu errado ao tentar atualizar o livro.";
 
       toast({
-        title: "Erro no upload",
+        title: "Erro na atualização",
         description: message,
         status: "error",
         duration: 5000,
@@ -152,22 +136,31 @@ export const ManageBooks = () => {
     }
   };
 
-  const handleFileChange = (event) => {
-    const { name, files } = event.target;
-    const file = files[0];
-    if (file) {
-      handleChange({ target: { name, value: file } });
-      if (name === "cover") setCoverName(file.name);
-      if (name === "pdf") setPdfName(file.name);
+  /*useEffect(() => {
+    loadBooks;
+  }, []);*/
+
+  const handleDelete = async (id) => {
+    console.log(`Deletar livro com ID ${id}`);
+    try {
+      const response = await deleteBook(id, token);
+      console.log("Livro deletado com sucesso:", response);
+    } catch (e) {
+      console.error("Erro ao deletar livro:", e);
+      toast({
+        title: "Erro ao deletar livro",
+        description: "Algo deu errado ao tentar deletar o livro.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    } finally {
+        onDeleteClose();
+        await loadBooks();
     }
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setSelectedBook((prev) => ({ ...prev, [name]: value }));
-  };
-
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <LoadingSpinner/>;
 
   return (
     <Container maxW="container.lg" p={4}>
@@ -175,132 +168,134 @@ export const ManageBooks = () => {
         Gerenciar Livros
       </Heading>
 
-      <Box>
-        <Grid templateColumns="repeat(4, 1fr)" gap={4} mb={2} fontWeight="bold">
-          <GridItem>Capa</GridItem>
-          <GridItem>Título</GridItem>
-          <GridItem>Autor</GridItem>
+      <Grid templateColumns="repeat(4, 1fr)" gap={4} mb={2} fontWeight="bold">
+        <GridItem>Capa</GridItem>
+        <GridItem>Título</GridItem>
+        <GridItem>Autor</GridItem>
+        <GridItem>Ações</GridItem>
+      </Grid>
 
-          <GridItem>Ações</GridItem>
-        </Grid>
-        {books.map((book) => (
-          <Box key={book._id} bg="gray.100" p={3} borderRadius="md" mb={2}>
-            <Grid templateColumns="repeat(4, 1fr)" gap={4} alignItems="center">
-              <GridItem>
-                <Image src={book.coverUrl} alt={book.title} boxSize="50px" />
-              </GridItem>
-              <GridItem>
-                <Text>{book.title}</Text>
-              </GridItem>
-              <GridItem>
-                <Text>{book.author}</Text>
-              </GridItem>
-              <GridItem>
-                <ButtonGroup>
-                  <Button colorScheme="blue" onClick={() => handleOpenUpdateModal(book)}>
-                    <MdEdit />
-                  </Button>
-                  <Button colorScheme="red" onClick={onDeleteOpen}>
-                    <MdDelete />
-                  </Button>
-                </ButtonGroup>
-              </GridItem>
-            </Grid>
-          </Box>
-        ))}
-      </Box>
+      {books.map((book) => (
+        <Box key={book._id} bg="gray.100" p={3} borderRadius="md" mb={2}>
+          <Grid templateColumns="repeat(4, 1fr)" gap={4} alignItems="center">
+            <GridItem>
+              <Image src={book.coverUrl} alt={book.title} boxSize="50px"/>
+            </GridItem>
+            <GridItem>
+              <Text>{book.title}</Text>
+            </GridItem>
+            <GridItem>
+              <Text>{book.author}</Text>
+            </GridItem>
+            <GridItem>
+              <ButtonGroup>
+                <Button colorScheme="blue" onClick={() => handleOpenUpdateModal(book)}>
+                  <MdEdit/>
+                </Button>
+                <Button colorScheme="red" onClick={onDeleteOpen}>
+                  <MdDelete/>
+                </Button>
+              </ButtonGroup>
+            </GridItem>
+          </Grid>
+        </Box>
+      ))}
 
-      {/* Modal de atualização do livro */}
-      <Modal initialFocusRef={initialRef} isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
+      {/*Modal para edição do livro*/}
+      <Modal closeOnOverlayClick={false} isOpen={isOpen} onClose={onClose} initialFocusRef={initialRef}>
+        <ModalOverlay/>
         <ModalContent>
-          <ModalHeader>Atualizar Livro</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody pb={6}>
-            <FormControl mb={4}>
-              <FormLabel>Título</FormLabel>
+          <ModalHeader>Editar Livro</ModalHeader>
+          <ModalCloseButton/>
+          <ModalBody>
+            <FormControl mb={4} isInvalid={error.title}>
+              <FormLabel>Título:</FormLabel>
               <Input
-                ref={initialRef}
+                type="text"
                 name="title"
-                value={selectedBook.title || ""}
-                onChange={handleInputChange}
-                placeholder="Título do livro"
+                placeholder="Título do Livro"
+                value={formData.title}
+                onChange={handleChange}
               />
+              {error.title && <FormErrorMessage>{error.title}</FormErrorMessage>}
             </FormControl>
 
-            <FormControl mb={4}>
-              <FormLabel>Autor</FormLabel>
+            <FormControl mb={4} isInvalid={error.author}>
+              <FormLabel>Autor:</FormLabel>
               <Input
+                type="text"
                 name="author"
-                value={selectedBook.author || ""}
-                onChange={handleInputChange}
-                placeholder="Autor do livro"
+                placeholder="Autor do Livro"
+                value={formData.author}
+                onChange={handleChange}
               />
+              {error.author && <FormErrorMessage>{error.author}</FormErrorMessage>}
             </FormControl>
 
-            <FormControl mb={4}>
-              <FormLabel>Descrição</FormLabel>
+            <FormControl mb={4} isInvalid={error.description}>
+              <FormLabel>Descrição:</FormLabel>
               <Input
+                type="text"
                 name="description"
-                value={selectedBook.description || ""}
-                onChange={handleInputChange}
-                placeholder="Descrição do livro"
+                placeholder="Descrição do Livro"
+                value={formData.description}
+                onChange={handleChange}
               />
+              {error.description && <FormErrorMessage>{error.description}</FormErrorMessage>}
             </FormControl>
 
             <FormControl mb={4}>
-              <FormLabel>Capa</FormLabel>
+              <FormLabel>Capa:</FormLabel>
+              <Button onClick={() => coverInputRef.current.click()} leftIcon={<Icon as={HiUpload}/>}>
+                {coverName || "Selecionar Capa"}
+              </Button>
               <Input
                 type="file"
                 accept="image/*"
                 name="cover"
                 ref={coverInputRef}
                 onChange={handleFileChange}
-                style={{ display: "none" }}
+                style={{display: "none"}}
               />
-              <Button onClick={() => coverInputRef.current.click()} leftIcon={<Icon as={HiUpload} />}>
-                {coverName || "Selecionar Capa"}
-              </Button>
-              {error.cover && <FormErrorMessage>{error.cover}</FormErrorMessage>}
             </FormControl>
 
             <FormControl mb={4}>
-              <FormLabel>Arquivo PDF</FormLabel>
+              <FormLabel>PDF:</FormLabel>
+              <Button onClick={() => pdfInputRef.current.click()} leftIcon={<Icon as={HiUpload}/>}>
+                {pdfName || "Selecionar PDF"}
+              </Button>
               <Input
                 type="file"
                 accept="application/pdf"
                 name="pdf"
                 ref={pdfInputRef}
                 onChange={handleFileChange}
-                style={{ display: "none" }}
+                style={{display: "none"}}
               />
-              <Button onClick={() => pdfInputRef.current.click()} leftIcon={<Icon as={HiUpload} />}>
-                {pdfName || "Selecionar PDF"}
-              </Button>
-              {error.pdf && <FormErrorMessage>{error.pdf}</FormErrorMessage>}
             </FormControl>
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="blue" onClick={() => handleUpdate(selectedBook._id)} mr={3}>
-            {loader ? <Spinner size="sm"/> : "Salvar"}
+            <Button variant="ghost" onClick={onClose}>Cancelar</Button>
+            <Button colorScheme="blue" onClick={() => handleUpdate(selectedBook._id)} isLoading={loader}>
+              {loading ? <Spinner size="sm"/> : "Salvar"}
             </Button>
-            <Button onClick={onClose}>Cancelar</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
 
-      {/* Modal de exclusão do livro */}
-      <Modal isOpen={isDeleteOpen} onClose={onDeleteClose}>
-        <ModalOverlay />
+
+      {/*Modal dialog delete*/}
+      <Modal closeOnOverlayClick={false} isOpen={isDeleteOpen} onClose={onDeleteClose}>
+        <ModalOverlay/>
         <ModalContent>
           <ModalHeader>Confirmar Exclusão</ModalHeader>
-          <ModalCloseButton />
+          <ModalCloseButton/>
           <ModalBody>Deseja realmente excluir o livro?</ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="red" onClick={() => handleDelete(selectedBook._id)} mr={3}>
-              Confirmar
+            <Button colorScheme="blue" onClick={() => handleDelete(selectedBook._id)} mr={3}>
+              {loading ? <Spinner size="sm"/> : "Confirmar"}
             </Button>
             <Button onClick={onDeleteClose}>Cancelar</Button>
           </ModalFooter>
@@ -309,5 +304,3 @@ export const ManageBooks = () => {
     </Container>
   );
 };
-
-export default ManageBooks;
