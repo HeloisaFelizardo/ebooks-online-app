@@ -12,7 +12,7 @@ const useDownload = () => {
     if (!token) {
       navigate('/login');
       toast({
-        title: 'Não foi possível fazer o download',
+        title: 'Faça seu login para baixar!',
         description: 'Você precisa estar logado para fazer esse download.',
         status: 'error',
         duration: 5000,

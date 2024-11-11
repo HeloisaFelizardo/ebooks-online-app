@@ -1,7 +1,14 @@
 {
   "name": "livraria-online",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "author": {
+    "name": "Heloisa Felizardo",
+    "email": "helocmp@yahoo.com",
+    "url": "https://github.com/HeloisaFelizardo",
+    "github": "HeloisaFelizardo",
+    "linkedin": "https://www.linkedin.com/in/heloisafelizardo"
+  },
   "type": "module",
   "scripts": {
     "dev": "vite",
