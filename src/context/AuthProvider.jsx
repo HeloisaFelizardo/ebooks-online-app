@@ -37,7 +37,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (credentials) => {
     try {
       const response = await userLogin(credentials);
-      const { token, _id: userId, name } = response;
+      const { _id: userId, name } = response;
       const userData = { ...response, userId };
 
       saveUserData(userData);

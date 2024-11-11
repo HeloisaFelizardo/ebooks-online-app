@@ -104,7 +104,7 @@ const ManageUsers = () => {
 
       setUsers(users.map((user) => user._id === userId ? updatedUser : user)); // Atualiza o usuário na lista
 
-      loadUsers(); // Recarrega a lista de usuários
+      await loadUsers(); // Recarrega a lista de usuários
 
       toast({
         title: 'Usuário atualizado',

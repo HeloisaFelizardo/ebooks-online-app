@@ -21,9 +21,9 @@ import {
   Icon,
   FormErrorMessage,
   useToast,
-  useDisclosure
+  useDisclosure, Textarea
 } from "@chakra-ui/react";
-import {useEffect, useRef, useState} from "react";
+import {useRef, useState} from "react";
 import {deleteBook, updateBook} from "../../services/bookService.js";
 import useForm from "../../hooks/useForm.js";
 import {useAuth} from "../../hooks/useAuth.js";
@@ -116,11 +116,10 @@ export const ManageBooks = () => {
       onClose();
     } catch (e) {
       const message = e.response?.status === 400 && e.response.data.error === "Livro já cadastrado."
-        ? "Esse livro já foi cadastrado."
+        ? "Já existe um livro com esse título na base de dados."
         : e.response?.status === 403
           ? "Você precisa estar logado para atualizar livros."
           : "Algo deu errado ao tentar atualizar o livro.";
-
       toast({
         title: "Erro na atualização",
         description: message,
@@ -168,10 +167,6 @@ export const ManageBooks = () => {
       setLoader(false);
     }
   };
-
-  useEffect(() => {
-    loadBooks();
-  }, []);
 
   if (loading) return <LoadingSpinner/>;
 
@@ -247,7 +242,7 @@ export const ManageBooks = () => {
 
             <FormControl mb={4} isInvalid={error.description}>
               <FormLabel>Descrição:</FormLabel>
-              <Input
+              <Textarea
                 type="text"
                 name="description"
                 placeholder="Descrição do Livro"
