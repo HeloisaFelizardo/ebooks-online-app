@@ -28,7 +28,7 @@ export const downloadBook = async (bookId, token) => {
     const response = await api.get(`/books/download/${bookId}`, {
       responseType: "blob",
       headers: {
-        'Authorization': `Bearer ${token}` // Adicione o token de autenticação no cabeçalho
+        'Authorization': `Bearer ${token}`
       }
     });
     return response.data;
@@ -65,7 +65,7 @@ export const postBook = async (bookData, token) => {
   try {
     const response = await api.post("/books/upload", bookData, {
       headers: {
-        Authorization: `Bearer ${token}`,  // Inclui o token no cabeçalho de autorização
+        Authorization: `Bearer ${token}`,
         'Content-Type': 'multipart/form-data' // Define o Content-Type para upload de arquivos
       },
     });
@@ -82,7 +82,7 @@ export const updateBook = async (bookId, formData, token) => {
     const response = await api.patch(`/books/${bookId}`, formData, {
       headers: {
         Authorization: `Bearer ${token}`,
-        'Content-Type': 'multipart/form-data', // Certifique-se de que o tipo de conteúdo é multipart/form-data
+        'Content-Type': 'multipart/form-data',
       },
     });
     console.log("Livro atualizado com sucesso:", response.data);

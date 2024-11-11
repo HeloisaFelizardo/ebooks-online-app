@@ -47,7 +47,7 @@ export const ManageBooks = () => {
   const [loader, setLoader] = useState(false);
   const toast = useToast();
   const {token} = useAuth();
-  const isMobile = useBreakpointValue({ base: true, md: false });
+  const isMobile = useBreakpointValue({base: true, md: false});
 
   const coverInputRef = useRef();
   const pdfInputRef = useRef();
@@ -172,43 +172,71 @@ export const ManageBooks = () => {
   if (loading) return <LoadingSpinner/>;
 
   return (
-    <Container maxW="container.lg" p={4}>
-      <Heading as="h1" size="lg" mb={6}>
-        Gerenciar Livros
-      </Heading>
+    <Container maxW="container.xl" p={4}>
+      <Heading as="h1" my={6}> Gerenciar Livros </Heading>
+      <Box>
+        {/* Cabeçalho para telas maiores */}
+        {!isMobile && (
+          <Grid templateColumns="repeat(5, 1fr)" gap={4} fontWeight="bold" mb={4}>
+            <GridItem>Capa:</GridItem>
+            <GridItem>Titulo:</GridItem>
+            <GridItem>Autor:</GridItem>
+            <GridItem>Descrição:</GridItem>
+            <GridItem>Ações:</GridItem>
+          </Grid>
+        )}
 
-      <Grid templateColumns="repeat(4, 1fr)" gap={4} mb={2} fontWeight="bold">
-        <GridItem>Capa</GridItem>
-        <GridItem>Título</GridItem>
-        <GridItem>Autor</GridItem>
-        <GridItem>Ações</GridItem>
-      </Grid>
-
-      {books.map((book) => (
-        <Box key={book._id} bg="gray.100" p={3} borderRadius="md" mb={2}>
-          <Grid templateColumns="repeat(4, 1fr)" gap={4} alignItems="center">
+        {/* Tabela de Livros */}
+        {books.map((book) => (
+          <Grid
+            key={book._id}
+            templateColumns={isMobile ? "1fr" : "repeat(5, 1fr)"}
+            gap={4}
+            p={4}
+            bg="gray.100"
+            border="1px solid"
+            borderColor="gray.200"
+            borderRadius="md"
+            mb={4}
+            alignItems="center"
+          >
             <GridItem>
-              <Image src={book.coverUrl} alt={book.title} width="50px"/>
+              {isMobile && <Box fontWeight="bold" color="gray.500" mb={1}>Capa:</Box>}
+              <Image src={book.coverUrl} alt={book.title} width="100px"/>
             </GridItem>
             <GridItem>
+              {isMobile && <Box fontWeight="bold" color="gray.500" mb={1}>Titulo:</Box>}
               <Text>{book.title}</Text>
             </GridItem>
             <GridItem>
+              {isMobile && <Box fontWeight="bold" color="gray.500" mb={1}>Autor:</Box>}
               <Text>{book.author}</Text>
             </GridItem>
             <GridItem>
-              <ButtonGroup>
-                <Button colorScheme="blue" size="sm" onClick={() => handleOpenUpdateModal(book)}>
-                  <MdEdit/>
-                </Button>
-                <Button colorScheme="red" size="sm" onClick={() => handleDeleteConfirmation(book)}>
-                  <MdDelete/>
-                </Button>
-              </ButtonGroup>
+              {isMobile && <Box fontWeight="bold" color="gray.500" mb={1}>Descrição:</Box>}
+              <Text>{book.description.slice(0, 100) + '...'}</Text>
+            </GridItem>
+            <GridItem>
+              {isMobile && <Box fontWeight="bold" color="gray.500" mb={1}>Ações:</Box>}
+              <Button
+                colorScheme="blue"
+                size="sm"
+                onClick={() => handleOpenUpdateModal(book)}
+                mr={2}
+              >
+                <MdEdit/> Editar
+              </Button>
+              <Button
+                colorScheme="red"
+                size="sm"
+                onClick={() => handleDeleteConfirmation(book)}
+              >
+                <MdDelete/> Excluir
+              </Button>
             </GridItem>
           </Grid>
-        </Box>
-      ))}
+        ))}
+      </Box>
 
       {/*Modal para edição do livro*/}
       <Modal closeOnOverlayClick={false} isOpen={isOpen} onClose={onClose} initialFocusRef={initialRef}>

@@ -26,8 +26,6 @@ export const fetchUsers = async (token) => {
       },
     });
 
-    console.log('Resposta da API:', response.data);
-
     // Verifica se a resposta contém os usuários e se é um array
     const usersData = response.data.users;
     return Array.isArray(usersData) ? usersData : [];
@@ -55,16 +53,16 @@ export const fetchUserById = async (userId, token) => {
 // Função para verificar se o e-mail já está registrado
 export const checkEmailExists = async (token, email, userId) => {
   try {
-    const response = await api.post('/users/verify-email', { email, id: userId }, {
+    const response = await api.post('/users/verify-email', {email, id: userId}, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
-    return { emailExists: response.data.emailExists };
+    return {emailExists: response.data.emailExists};
   } catch (error) {
     if (error.response && error.response.status === 400) {
       // Email já existe por outro usuário
-      return { emailExists: true };
+      return {emailExists: true};
     }
     console.error('Erro ao verificar o email:', error);
     throw error; // Lança outros erros para serem tratados no handleSave

@@ -11,7 +11,7 @@ const BookCard = ({title, author, coverUrl, onDownload}) => {
         borderRadius="md"
       />
       <Text mt={2} fontWeight="bold">{title}</Text>
-      <Text>{author}</Text>
+      <Text>{author.slice(0, 25)}</Text>
       <Button mt={4} colorScheme="teal" onClick={onDownload}>
         Ler Agora
       </Button>

@@ -142,13 +142,11 @@ const ManageUsers = () => {
     loadUsers();
   }, []);
 
+  if (loading) return <LoadingSpinner/>;
+
   return (
-    <Container maxW="container.xl" p={10}>
-      <Box>
-        <Heading as="h1" mb={6}>Gerenciar Usuários</Heading>
-        {loading ? (
-          <LoadingSpinner />
-        ) : (
+    <Container maxW="container.xl" p={4}>
+      <Heading as="h1" my={6}> Gerenciar Usuários </Heading>
           <Box>
             {/* Cabeçalho para telas maiores */}
             {!isMobile && (
@@ -210,8 +208,6 @@ const ManageUsers = () => {
               </Grid>
             ))}
           </Box>
-        )}
-      </Box>
 
       {/* Modal de confirmação de exclusão de usuário */}
       <Modal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)}>

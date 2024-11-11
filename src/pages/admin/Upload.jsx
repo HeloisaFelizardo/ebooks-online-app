@@ -98,9 +98,9 @@ const Upload = () => {
   };
 
   return (
-    <Container maxW="container.xl" p={10}>
+    <Container maxW="container.xl" p={4}>
       <Box as="form" onSubmit={handleSubmit}>
-        <Heading as="h3" mb={6}>Adicionar Novo Livro</Heading>
+        <Heading as="h1" my={6}> Adicionar Novo Livro </Heading>
 
         <FormControl mb={4} isInvalid={error.title}>
           <FormLabel>Título:</FormLabel>
