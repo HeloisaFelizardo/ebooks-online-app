@@ -1,12 +1,12 @@
-import { createContext, useState, useEffect } from 'react';
-import { useToast } from '@chakra-ui/react';
+import {createContext, useState, useEffect} from 'react';
+import {useToast} from '@chakra-ui/react';
 import PropTypes from 'prop-types';
-import { userLogin } from "../services/userService.js";
+import {userLogin} from "../services/userService.js";
 import LoadingSpinner from "../components/LoadingSpinner.jsx";
 
 export const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
+export const AuthProvider = ({children}) => {
   const [user, setUser] = useState(() => {
     const storedUser = localStorage.getItem('user');
     return storedUser ? JSON.parse(storedUser) : null;
@@ -15,6 +15,10 @@ export const AuthProvider = ({ children }) => {
   const toast = useToast();
 
   useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      // Validar o token com o backend ou verificar se ainda é válido
+    }
     setLoading(false);
   }, []);
 
@@ -37,8 +41,8 @@ export const AuthProvider = ({ children }) => {
   const login = async (credentials) => {
     try {
       const response = await userLogin(credentials);
-      const { _id: userId, name } = response;
-      const userData = { ...response, userId };
+      const {_id: userId, name} = response;
+      const userData = {...response, userId};
 
       saveUserData(userData);
 
@@ -59,20 +63,20 @@ export const AuthProvider = ({ children }) => {
   };
 
   const setToken = (newToken) => {
-    if (user) {
-      const updatedUser = { ...user, token: newToken };
-      setUser(updatedUser);
-      localStorage.setItem('user', JSON.stringify(updatedUser));
-      if (newToken) {
+    if (newToken) {
+      if (user) {
+        const updatedUser = {...user, token: newToken};
+        setUser(updatedUser);
+        localStorage.setItem('user', JSON.stringify(updatedUser));
         localStorage.setItem('token', newToken);
-      } else {
-        localStorage.removeItem('token');
       }
+    } else {
+      logout(); // Logout quando o token for removido ou inválido
     }
   };
 
-  return loading ? <LoadingSpinner /> : (
-    <AuthContext.Provider value={{ user, login, logout, token: user?.token, setToken, userId: user?.id }}>
+  return loading ? <LoadingSpinner/> : (
+    <AuthContext.Provider value={{user, login, logout, token: user?.token, setToken, userId: user?.id}}>
       {children}
     </AuthContext.Provider>
   );

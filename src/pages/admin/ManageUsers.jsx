@@ -1,12 +1,6 @@
 import {useEffect, useState, useRef} from 'react';
 import {
   Box,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
   Button,
   Heading,
   useToast,
@@ -21,11 +15,12 @@ import {
   ModalHeader,
   FormControl,
   FormLabel,
-  Input
+  Input, useBreakpointValue, Grid, GridItem
 } from '@chakra-ui/react';
 import {useAuth} from "../../hooks/useAuth.js";
 import {deleteUser, fetchUsers, updateUser} from "../../services/userService.js";
 import LoadingSpinner from "../../components/LoadingSpinner.jsx";
+import {MdDelete, MdEdit} from "react-icons/md";
 
 const ManageUsers = () => {
   const [users, setUsers] = useState([]);
@@ -37,6 +32,8 @@ const ManageUsers = () => {
   const toast = useToast();
   const {token} = useAuth();
   const initialRef = useRef(null);
+
+  const isMobile = useBreakpointValue({ base: true, md: false });
 
   // Função para carregar os usuários
   const loadUsers = async () => {
@@ -150,47 +147,69 @@ const ManageUsers = () => {
       <Box>
         <Heading as="h1" mb={6}>Gerenciar Usuários</Heading>
         {loading ? (
-          <LoadingSpinner/>
+          <LoadingSpinner />
         ) : (
-          <Table variant="simple">
-            <Thead>
-              <Tr>
-                <Th>ID</Th>
-                <Th>Nome</Th>
-                <Th>Email</Th>
-                <Th>Ações</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {users.map((user) => (
-                <Tr key={user._id}>
-                  <Td>{user._id}</Td>
-                  <Td>{user.name}</Td>
-                  <Td>{user.email}</Td>
-                  <Td>
-                    <Button
-                      colorScheme="blue"
-                      size="sm"
-                      onClick={() => openUpdateModal(user)}
-                      mr={2}
-                    >
-                      Editar
-                    </Button>
-                    <Button
-                      colorScheme="red"
-                      size="sm"
-                      onClick={() => {
-                        setSelectedUserId(user._id);
-                        setIsDeleteModalOpen(true);
-                      }}
-                    >
-                      Excluir
-                    </Button>
-                  </Td>
-                </Tr>
-              ))}
-            </Tbody>
-          </Table>
+          <Box>
+            {/* Cabeçalho para telas maiores */}
+            {!isMobile && (
+              <Grid templateColumns="repeat(4, 1fr)" gap={4} fontWeight="bold" mb={4}>
+                <GridItem>ID</GridItem>
+                <GridItem>Nome</GridItem>
+                <GridItem>Email</GridItem>
+                <GridItem>Ações</GridItem>
+              </Grid>
+            )}
+
+            {/* Tabela de Usuários */}
+            {users.map((user) => (
+              <Grid
+                key={user._id}
+                templateColumns={isMobile ? "1fr" : "repeat(4, 1fr)"}
+                gap={4}
+                p={4}
+                bg="gray.100"
+                border="1px solid"
+                borderColor="gray.200"
+                borderRadius="md"
+                mb={4}
+                alignItems="center"
+              >
+                <GridItem>
+                  {isMobile && <Box fontWeight="bold" color="gray.500" mb={1}>ID:</Box>}
+                  {user._id}
+                </GridItem>
+                <GridItem>
+                  {isMobile && <Box fontWeight="bold" color="gray.500" mb={1}>Nome:</Box>}
+                  {user.name}
+                </GridItem>
+                <GridItem>
+                  {isMobile && <Box fontWeight="bold" color="gray.500" mb={1}>Email:</Box>}
+                  {user.email}
+                </GridItem>
+                <GridItem>
+                  {isMobile && <Box fontWeight="bold" color="gray.500" mb={1}>Ações:</Box>}
+                  <Button
+                    colorScheme="blue"
+                    size="sm"
+                    onClick={() => openUpdateModal(user)}
+                    mr={2}
+                  >
+                    <MdEdit/> Editar
+                  </Button>
+                  <Button
+                    colorScheme="red"
+                    size="sm"
+                    onClick={() => {
+                      setSelectedUserId(user._id);
+                      setIsDeleteModalOpen(true);
+                    }}
+                  >
+                    <MdDelete/> Excluir
+                  </Button>
+                </GridItem>
+              </Grid>
+            ))}
+          </Box>
         )}
       </Box>
 

@@ -21,7 +21,7 @@ import {
   Icon,
   FormErrorMessage,
   useToast,
-  useDisclosure, Textarea
+  useDisclosure, Textarea, useBreakpointValue
 } from "@chakra-ui/react";
 import {useRef, useState} from "react";
 import {deleteBook, updateBook} from "../../services/bookService.js";
@@ -47,6 +47,7 @@ export const ManageBooks = () => {
   const [loader, setLoader] = useState(false);
   const toast = useToast();
   const {token} = useAuth();
+  const isMobile = useBreakpointValue({ base: true, md: false });
 
   const coverInputRef = useRef();
   const pdfInputRef = useRef();
@@ -197,10 +198,10 @@ export const ManageBooks = () => {
             </GridItem>
             <GridItem>
               <ButtonGroup>
-                <Button colorScheme="blue" onClick={() => handleOpenUpdateModal(book)}>
+                <Button colorScheme="blue" size="sm" onClick={() => handleOpenUpdateModal(book)}>
                   <MdEdit/>
                 </Button>
-                <Button colorScheme="red" onClick={() => handleDeleteConfirmation(book)}>
+                <Button colorScheme="red" size="sm" onClick={() => handleDeleteConfirmation(book)}>
                   <MdDelete/>
                 </Button>
               </ButtonGroup>

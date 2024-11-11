@@ -9,7 +9,7 @@ import {
   useToast,
   FormErrorMessage,
   Spinner,
-  Icon
+  Icon, Textarea
 } from '@chakra-ui/react';
 import { postBook } from "../../services/bookService.js";
 import useForm from "../../hooks/useForm.js";
@@ -116,7 +116,7 @@ const Upload = () => {
 
         <FormControl mb={4} isInvalid={error.description}>
           <FormLabel>Descrição:</FormLabel>
-          <Input type="text" name="description" placeholder="Digite a descrição do livro" onChange={handleChange} boxShadow="sm"/>
+          <Textarea type="text" name="description" placeholder="Digite a descrição do livro" onChange={handleChange} boxShadow="sm"/>
           {error.description && <FormErrorMessage>{error.description}</FormErrorMessage>}
         </FormControl>
 
