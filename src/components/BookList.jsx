@@ -15,6 +15,7 @@ const BookList = ({books}) => {
               title={book.title}
               author={book.author}
               coverUrl={book.coverUrl}
+              description={book.description}
               onDownload={() => handleDownload(book._id, `${book.title}.pdf`)}
             />
           </VStack>
