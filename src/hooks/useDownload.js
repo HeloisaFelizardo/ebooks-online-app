@@ -10,7 +10,6 @@ const useDownload = () => {
 
   return async (bookId, fileName) => {
     if (!token) {
-      navigate('/login');
       toast({
         title: 'Faça seu login para baixar!',
         description: 'Você precisa estar logado para fazer esse download.',
@@ -18,6 +17,7 @@ const useDownload = () => {
         duration: 5000,
         isClosable: true,
       });
+      navigate('/login');
       return;
     }
 
