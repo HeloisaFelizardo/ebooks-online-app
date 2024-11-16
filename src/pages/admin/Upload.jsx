@@ -83,7 +83,7 @@ const Upload = () => {
         ? 'Esse livro já foi cadastrado.'
         : e.response?.status === 403
           ? 'Você precisa estar logado para fazer upload de livros.'
-          : 'Algo deu errado ao fazer upload do livro.';
+          : 'Esse livro já foi cadastrado.';
 
       toast({
         title: 'Erro no upload',

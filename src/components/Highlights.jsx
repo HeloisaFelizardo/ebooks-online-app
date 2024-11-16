@@ -1,5 +1,6 @@
 import {Box, Button, Container, Flex, Heading, Image, Text, useColorModeValue} from "@chakra-ui/react";
 import useDownload from "../hooks/useDownload.js";
+import useBooks from "../hooks/useBooks.js";
 
 export const Highlights = ({book}) => {
   const handleDownload = useDownload();
@@ -10,7 +11,7 @@ export const Highlights = ({book}) => {
       <Container maxW="container.xl" py={8}>
         <Box bg={useColorModeValue('gray.100', 'gray.700')} p={8} borderRadius="lg" mb={12}>
           <Heading as="h2" size="xl" mb={4}>
-            Destaque da Semana
+            Destaque do Dia
           </Heading>
           <Flex direction={{ base: 'column', md: 'row' }} align="center">
             <Image
