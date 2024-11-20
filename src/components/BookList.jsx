@@ -5,6 +5,11 @@ import useDownload from "../hooks/useDownload.js";
 const BookList = ({books}) => {
   const handleDownload = useDownload();
 
+  if (!Array.isArray(books)) {
+    console.error("books não é um array:", books);
+    return null;  // ou um fallback adequado
+  }
+
   return (
     <Container maxW='container.xl' mb={10}>
       <Heading as="h3">Ebooks</Heading>

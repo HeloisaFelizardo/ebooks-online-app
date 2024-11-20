@@ -170,6 +170,11 @@ export const ManageBooks = () => {
 
   if (loading) return <LoadingSpinner/>;
 
+  // Exibindo mensagem "Nenhum livro encontrado" quando a busca não retornar resultados
+  if (books.length === 0 || !books) {
+    return <Text fontSize="xl" color="gray.500">Nenhum livro encontrado</Text>;
+  }
+
   return (
     <Container maxW="container.xl" p={4}>
       <Heading as="h1" my={6}> Gerenciar Livros </Heading>
@@ -213,7 +218,12 @@ export const ManageBooks = () => {
             </GridItem>
             <GridItem>
               {isMobile && <Box fontWeight="bold" color="gray.500" mb={1}>Descrição:</Box>}
-              <Text>{book.description.slice(0, 100) + '...'}</Text>
+              <Text>
+                {book?.description
+                  ? book.description.slice(0, 100) + '...'
+                  : 'Descrição indisponível'}
+              </Text>
+
             </GridItem>
             <GridItem>
               {isMobile && <Box fontWeight="bold" color="gray.500" mb={1}>Ações:</Box>}

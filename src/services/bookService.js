@@ -25,7 +25,7 @@ export const getBookById = async (bookId) => {
 //função para fazer download do livro
 export const downloadBook = async (bookId, token) => {
   try {
-    const response = await api.get(`/books/download/${bookId}`, {
+    const response = await api.get(`/books/${bookId}/download`, {
       responseType: "blob",
       headers: {
         'Authorization': `Bearer ${token}`
@@ -50,9 +50,10 @@ export const getBooksByAuthor = async (author) => {
 };
 
 //função para buscar livros por título
-export const getBooksByTitle = async (title) => {
+export const getBooksByTitle = async (searchTerm) => {
   try {
-    const response = await api.get(`/books?title=${title}`);
+    const response = await api.get(`/books/search?searchTerm=${encodeURIComponent(searchTerm.trim())}`);
+    console.log('Livros encontrados:', response.data);
     return response.data;
   } catch (error) {
     console.error("Erro ao buscar livros:", error);
