@@ -1,76 +1,74 @@
-// hooks/useBooks.js
-import {useState, useEffect} from "react";
-import {getBooks, getBooksByTitle} from "../services/bookService.js";
+import { useState, useEffect, useCallback } from "react";
+import { getBooks, getBooksByTerm } from "../services/bookService.js";
 
 const useBooks = () => {
   const [books, setBooks] = useState([]);
   const [highlightBook, setHighlightBook] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    loadBooks();
+  // Função auxiliar para definir estado ao carregar dados
+  const handleLoad = async (loadFunction, onSuccess) => {
+    setLoading(true);
+    try {
+      const data = await loadFunction();
+      onSuccess(data);
+    } catch (error) {
+      console.error("Erro ao carregar dados:", error);
+      setBooks([]);
+      setHighlightBook(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Função para destacar um livro com base no dia do ano
+  const highlightDailyBook = (booksList) => {
+    if (!booksList || booksList.length === 0) return;
+    const dayOfYear = Math.floor(
+      (new Date() - new Date(new Date().getFullYear(), 0, 0)) /
+      (1000 * 60 * 60 * 24)
+    );
+    setHighlightBook(booksList[dayOfYear % booksList.length]);
+  };
+
+  // Função para carregar livros
+  const loadBooks = useCallback(() => {
+    handleLoad(getBooks, (booksData) => {
+      setBooks(booksData || []);
+      highlightDailyBook(booksData);
+    });
   }, []);
 
-
-  const loadBooks = async () => {
-    try {
-      const booksData = await getBooks();
-      if (!booksData || booksData.length === 0) {
-        console.warn("Nenhum livro encontrado.");
-        setBooks([]);
-        setHighlightBook(null);
-        setLoading(false);
+  // Função de busca de livros
+  const searchBooks = useCallback(
+    (searchTerm) => {
+      if (!searchTerm.trim()) {
+        loadBooks();
         return;
       }
 
-      setBooks(booksData);
+      handleLoad(() => getBooksByTerm(searchTerm), (filteredBooks) => {
+        const booksList = filteredBooks?.books || [];
+        setBooks(booksList);
+        setHighlightBook(booksList[0] || null);
+      });
+    },
+    [loadBooks]
+  );
 
-      // Selecionar um livro para destaque
-      const today = new Date();
-      const dayOfYear = Math.floor(
-        (today - new Date(today.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24)
-      );
-      const bookIndex = dayOfYear % booksData.length;
-      setHighlightBook(booksData[bookIndex]);
-    } catch (error) {
-      console.error("Erro ao carregar livros:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const searchBooks = async (searchTerm) => {
-    if (!searchTerm.trim()) {
-      loadBooks(); // Mostra todos os livros ao limpar
-      return;
-    }
-    try {
-      setLoading(true);
-      const filteredBooks = await getBooksByTitle(searchTerm);
-      setBooks(filteredBooks.books);
-
-      if (filteredBooks.length > 0) {
-        setHighlightBook(filteredBooks[0]); // Destaque o primeiro livro encontrado
-      } else {
-        setHighlightBook(null);
-      }
-    } catch (error) {
-      console.error("Erro na busca de livros:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Carregar livros inicialmente
+  useEffect(() => {
+    loadBooks();
+  }, [loadBooks]);
 
   return {
     books,
-    setBooks,
     highlightBook,
     loading,
-    setLoading,
     loadBooks,
-    searchBooks, // Adicionado
+    searchBooks,
+    setBooks,
   };
-
 };
 
 export default useBooks;

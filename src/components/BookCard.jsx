@@ -14,30 +14,31 @@ import {
   Flex, Heading
 } from '@chakra-ui/react';
 
-const BookCard = ({ title, author, coverUrl, description, onDownload }) => {
-  const { isOpen, onOpen, onClose } = useDisclosure(); // Hook para controlar a abertura/fechamento do modal
+const BookCard = ({title, author, coverUrl, description, onDownload}) => {
+  const {isOpen, onOpen, onClose} = useDisclosure(); // Hook para controlar a abertura/fechamento do modal
 
   return (
     <Box backgroundColor="white" borderRadius="lg" boxShadow="sm" overflow="hidden" p={4}>
       <Image
         src={coverUrl}
         alt={title}
-        boxSize="200px"
+        width="200px"
+
         objectFit="cover"
         borderRadius="md"
       />
-      <Text mt={2} fontWeight="bold">{title}</Text>
-      <Text>{author.slice(0, 25)}</Text>
+      <Text mt={2} fontWeight="bold">{title.length > 24 ? `${title.substring(0, 24)}...` : title}</Text>
+      <Text>{author.length > 20 ? `${author.substring(0, 20)}...` : author}</Text>
       <Button mt={4} colorScheme="teal" onClick={onOpen}>Ler Mais</Button> {/* Abre o modal ao clicar */}
 
       {/* Modal com os detalhes do livro */}
       <Modal isOpen={isOpen} size={"full"} onClose={onClose}>
-        <ModalOverlay />
+        <ModalOverlay/>
         <ModalContent>
           <ModalHeader></ModalHeader>
-          <ModalCloseButton />
+          <ModalCloseButton/>
           <ModalBody>
-            <Flex direction={{ base: 'column', md: 'row' }} align="top">
+            <Flex direction={{base: 'column', md: 'row'}} align="top">
               <Image
                 src={coverUrl}
                 alt={title}
@@ -45,8 +46,8 @@ const BookCard = ({ title, author, coverUrl, description, onDownload }) => {
                 height="400px"
                 objectFit="cover"
                 borderRadius="md"
-                mb={{ base: 4, md: 0 }}
-                mr={{ base: 0, md: 6 }}
+                mb={{base: 4, md: 0}}
+                mr={{base: 0, md: 6}}
               />
               <Box>
                 <Heading as="h3" size="lg" mb={2}>
@@ -59,7 +60,7 @@ const BookCard = ({ title, author, coverUrl, description, onDownload }) => {
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="teal"  onClick={onDownload}>Ler Agora</Button>
+            <Button colorScheme="teal" onClick={onDownload}>Ler Agora</Button>
             <Button variant="ghost" onClick={onClose} ml={3}>Fechar</Button>
           </ModalFooter>
         </ModalContent>

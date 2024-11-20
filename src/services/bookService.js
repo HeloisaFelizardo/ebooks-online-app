@@ -50,7 +50,7 @@ export const getBooksByAuthor = async (author) => {
 };
 
 //função para buscar livros por título
-export const getBooksByTitle = async (searchTerm) => {
+export const getBooksByTerm = async (searchTerm) => {
   try {
     const response = await api.get(`/books/search?searchTerm=${encodeURIComponent(searchTerm.trim())}`);
     console.log('Livros encontrados:', response.data);

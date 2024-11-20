@@ -1,4 +1,15 @@
-import {Box, Button, Input, Heading, Link, Text, FormLabel, FormControl, FormErrorMessage, Spinner} from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Input,
+  Heading,
+  Link,
+  Text,
+  FormLabel,
+  FormControl,
+  FormErrorMessage,
+  Spinner
+} from '@chakra-ui/react';
 import {useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {useAuth} from '../hooks/useAuth.js';
@@ -73,7 +84,7 @@ const Login = () => {
         </FormControl>
         {error.general && <Text color="red.500" mb={4}>{error.general}</Text>}
         <Button width="full" colorScheme="teal" onClick={handleLogin} isLoading={loading}>
-          {loading ? <Spinner size="sm" /> : 'Entrar'}
+          {loading ? <Spinner size="sm"/> : 'Entrar'}
         </Button>
         <Text mt={4} color="white">
           Não tem conta?{' '}
