@@ -1,14 +1,14 @@
 import { Box, Button, Container, Input } from "@chakra-ui/react";
 import { SearchIcon } from "@chakra-ui/icons";
 
-export const Search = ({ searchTerm, setSearchTerm, onSearch }) => {
+export const Search = ({ searchTerm, setSearchTerm, searchBooks }) => { // Passando searchBooks diretamente como prop
   const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value);
+    setSearchTerm(event.target.value); // Atualiza o termo de busca
   };
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
-      onSearch(); // Chama a busca ao pressionar Enter
+      searchBooks(searchTerm); // Chama a busca ao pressionar Enter
     }
   };
 
@@ -18,11 +18,11 @@ export const Search = ({ searchTerm, setSearchTerm, onSearch }) => {
         <Input
           placeholder="Buscar livros..."
           value={searchTerm}
-          onChange={handleSearchChange}
-          onKeyDown={handleKeyDown}
+          onChange={handleSearchChange} // Atualiza o termo de busca
+          onKeyDown={handleKeyDown} // Executa a busca ao pressionar Enter
         />
       </Box>
-      <Button leftIcon={<SearchIcon />} variant="ghost" onClick={onSearch}>
+      <Button leftIcon={<SearchIcon />} variant="ghost" onClick={() => searchBooks(searchTerm)}>
         Buscar
       </Button>
     </Container>

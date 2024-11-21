@@ -5,8 +5,6 @@ import useDownload from "../hooks/useDownload.js";
 const BookList = ({books}) => {
   const handleDownload = useDownload();
 
-
-
   return (
     <Container maxW='container.xl' mb={10}>
       <Heading as="h3">Ebooks</Heading>

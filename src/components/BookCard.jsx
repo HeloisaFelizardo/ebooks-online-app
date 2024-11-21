@@ -22,8 +22,7 @@ const BookCard = ({title, author, coverUrl, description, onDownload}) => {
       <Image
         src={coverUrl}
         alt={title}
-        width="200px"
-
+        boxSize="200px"
         objectFit="cover"
         borderRadius="md"
       />

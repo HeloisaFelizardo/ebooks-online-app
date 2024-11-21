@@ -5,6 +5,7 @@ const useBooks = () => {
   const [books, setBooks] = useState([]);
   const [highlightBook, setHighlightBook] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState(""); // Adicionando estado para o termo de busca
 
   // Função auxiliar para definir estado ao carregar dados
   const handleLoad = async (loadFunction, onSuccess) => {
@@ -43,7 +44,7 @@ const useBooks = () => {
   const searchBooks = useCallback(
     (searchTerm) => {
       if (!searchTerm.trim()) {
-        loadBooks();
+        loadBooks(); // Carrega todos os livros quando o termo está vazio
         return;
       }
 
@@ -53,13 +54,17 @@ const useBooks = () => {
         setHighlightBook(booksList[0] || null);
       });
     },
-    [loadBooks]
+    [loadBooks] // Dependência de loadBooks
   );
 
-  // Carregar livros inicialmente
+  // Monitorar mudanças no searchTerm e recarregar livros se necessário
   useEffect(() => {
-    loadBooks();
-  }, [loadBooks]);
+    if (!searchTerm.trim()) {
+      loadBooks(); // Chama a função que carrega todos os livros quando a busca está vazia
+    } else {
+      searchBooks(searchTerm); // Chama a busca com o termo se ele não estiver vazio
+    }
+  }, [searchTerm, loadBooks, searchBooks]);
 
   return {
     books,
@@ -68,6 +73,7 @@ const useBooks = () => {
     loadBooks,
     searchBooks,
     setBooks,
+    setSearchTerm, // Expondo a função para atualizar o searchTerm
   };
 };
 

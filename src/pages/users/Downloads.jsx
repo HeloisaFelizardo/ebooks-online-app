@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {Box, Flex, Text} from "@chakra-ui/react";
 import BookList from "../../components/BookList.jsx";
 import LoadingSpinner from "../../components/LoadingSpinner.jsx";
@@ -7,18 +7,18 @@ import {Search} from "../../components/Search.jsx";
 import useBooks from "../../hooks/useBooks.js";
 
 const Downloads = () => {
-  const {books, setBooks, highlightBook, loading, searchBooks} = useBooks();
+  const { books, highlightBook, loading, searchBooks } = useBooks();
   const [searchTerm, setSearchTerm] = useState("");
 
-  const handleSearch = () => {
-    const results = searchBooks(searchTerm);
-    setBooks(results);
-  };
+  // Disparar busca inicial quando a página é carregada
+  useEffect(() => {
+    searchBooks(""); // Carrega todos os livros inicialmente
+  }, [searchBooks]);
 
   return (
     <Box minHeight="100vh" display="flex" flexDirection="column">
       {/* Barra de busca */}
-      <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} onSearch={handleSearch}/>
+      <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} searchBooks={searchBooks} />
 
       {/* Spinner de carregamento ou conteúdo principal */}
       {loading ? (
@@ -50,7 +50,8 @@ const Downloads = () => {
 
           ) : (
             <>
-              <Highlights book={highlightBook}/>
+              {/* Exibe o destaque do livro se disponível */}
+              {highlightBook && <Highlights book={highlightBook} />}
               <BookList books={books}/>
             </>
           )}
