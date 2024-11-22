@@ -11,7 +11,6 @@ import ProtectedRoute from "./ProtectedRoute.jsx";
 import {AuthProvider} from "../context/AuthProvider.jsx";
 import {ManageBooks} from "../pages/admin/ManageBooks.jsx";
 
-
 const AppRouter = () => {
   return (
     <AuthProvider>

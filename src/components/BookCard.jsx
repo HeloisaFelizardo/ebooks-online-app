@@ -28,7 +28,7 @@ const BookCard = ({title, author, coverUrl, description, onDownload}) => {
       />
       <Text mt={2} fontWeight="bold">{title.length > 24 ? `${title.substring(0, 24)}...` : title}</Text>
       <Text>{author.length > 20 ? `${author.substring(0, 20)}...` : author}</Text>
-      <Button mt={4} colorScheme="teal" onClick={onOpen}>Ler Mais</Button> {/* Abre o modal ao clicar */}
+      <Button mt={4} colorScheme="teal" onClick={onOpen}>Saiba Mais</Button> {/* Abre o modal ao clicar */}
 
       {/* Modal com os detalhes do livro */}
       <Modal isOpen={isOpen} size={"full"} onClose={onClose}>

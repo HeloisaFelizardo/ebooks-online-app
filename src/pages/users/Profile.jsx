@@ -8,7 +8,7 @@ import {
   FormLabel,
   FormControl,
   FormErrorMessage,
-  useToast
+  useToast, Card
 } from '@chakra-ui/react';
 import {useState, useEffect} from 'react';
 import {useNavigate} from 'react-router-dom';
@@ -140,37 +140,34 @@ const Profile = () => {
       {loading ? (
         <LoadingSpinner/>
       ) : (
-        <Box p={8} maxWidth="400px" borderWidth={1} borderRadius={8} boxShadow="lg" backgroundColor="blackAlpha.500">
-          <Heading as="h2" mb={6} textAlign="center" color="white">Meus Dados</Heading>
+        <Card p={8} maxWidth="400px" borderColor='gray.300' color='gray.600' borderWidth={1} borderRadius={8} boxShadow="lg">
+          <Heading as="h2" mb={6} textAlign="center">Meus Dados</Heading>
           <FormControl isInvalid={error.name} mb={4}>
-            <FormLabel color="white" fontWeight="thin">Nome:</FormLabel>
+            <FormLabel >Nome:</FormLabel>
             <Input
               name="name"
               placeholder="Nome"
-              color='white'
               value={formData.name}
               onChange={handleChange}
             />
             {error.name && <FormErrorMessage>{error.name}</FormErrorMessage>}
           </FormControl>
           <FormControl isInvalid={error.email} mb={4}>
-            <FormLabel color="white" fontWeight="thin">Email:</FormLabel>
+            <FormLabel>Email:</FormLabel>
             <Input
               name="email"
               placeholder="Email"
-              color='white'
               value={formData.email}
               onChange={handleChange}
             />
             {error.email && <FormErrorMessage>{error.email}</FormErrorMessage>}
           </FormControl>
           <FormControl isInvalid={error.password} mb={4}>
-            <FormLabel color="white" fontWeight="thin">Nova Senha:</FormLabel>
+            <FormLabel>Nova Senha:</FormLabel>
             <Input
               name="password"
               type="password"
               placeholder="Nova Senha"
-              color='white'
               value={formData.password}
               onChange={handleChange}
             />
@@ -178,13 +175,13 @@ const Profile = () => {
           </FormControl>
           <Button width="full" colorScheme="teal" onClick={handleSave}>Salvar Alterações</Button>
           <Button width="full" colorScheme="red" mt={4} onClick={handleDelete}>Excluir Conta</Button>
-          <Text mt={4} color="white">
+          <Text mt={4}>
             Quer voltar para a home?{' '}
-            <Link color="teal.200" onClick={() => navigate('/')}>
+            <Link color="teal" onClick={() => navigate('/')}>
               Clique aqui
             </Link>
           </Text>
-        </Box>
+        </Card>
       )}
     </Box>
   );
