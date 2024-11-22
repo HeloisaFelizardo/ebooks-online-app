@@ -1,9 +1,24 @@
 import {Box, Button, Container, Flex, Heading, Image, Text, useColorModeValue} from "@chakra-ui/react";
 import useDownload from "../hooks/useDownload.js";
+import LoadingButton from "./LoadingButton.jsx";
+import {useState} from "react";
 
 export const Highlights = ({book}) => {
   const handleDownload = useDownload();
+  const [isLoading, setIsLoading] = useState(false);
+
   if (!book) return null; // Certifique-se de que o livro existe antes de renderizar
+
+  const handleDownloadClick = async () => {
+    try {
+      setIsLoading(true);
+      await handleDownload(book._id, book.title); // Chama a função de download
+    } catch (error) {
+      console.error("Erro ao fazer o download:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <Box as="main" flexGrow={1}>
@@ -30,7 +45,9 @@ export const Highlights = ({book}) => {
               <Text mb={4}>
                 {book.description}
               </Text>
-              <Button colorScheme="teal" onClick={() => handleDownload(book._id, book.title)}>Ler Agora</Button>
+              <LoadingButton colorScheme="teal" onClick={handleDownloadClick} isLoading={isLoading}>
+                Ler Agora
+              </LoadingButton>
             </Box>
           </Flex>
         </Box>

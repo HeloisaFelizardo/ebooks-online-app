@@ -1,9 +1,18 @@
 import {Container, Grid, Heading, VStack} from '@chakra-ui/react';
 import BookCard from './BookCard';
 import useDownload from "../hooks/useDownload.js";
+import {useState} from "react";
 
 const BookList = ({books}) => {
   const handleDownload = useDownload();
+
+  const [loadingBooks, setLoadingBooks] = useState({}); // Objeto para controlar o estado de carregamento
+
+  const handleDownloadWithLoader = async (bookId, fileName) => {
+    setLoadingBooks((prev) => ({...prev, [bookId]: true})); // Ativa o loader do livro
+    await handleDownload(bookId, fileName);
+    setLoadingBooks((prev) => ({...prev, [bookId]: false})); // Desativa o loader do livro
+  };
 
   return (
     <Container maxW='container.xl' mb={10}>
@@ -16,7 +25,8 @@ const BookList = ({books}) => {
               author={book.author}
               coverUrl={book.coverUrl}
               description={book.description}
-              onDownload={() => handleDownload(book._id, `${book.title}.pdf`)}
+              onDownload={() => handleDownloadWithLoader(book._id, `${book.title}.pdf`)}
+              isLoading={loadingBooks[book._id] || false} // Passa o estado do carregamento
             />
           </VStack>
         ))}

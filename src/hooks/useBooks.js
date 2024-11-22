@@ -1,20 +1,22 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { getBooks, getBooksByTerm } from "../services/bookService.js";
 
 const useBooks = () => {
   const [books, setBooks] = useState([]);
   const [highlightBook, setHighlightBook] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [searchTerm, setSearchTerm] = useState(""); // Adicionando estado para o termo de busca
+  const [error, setError] = useState(null); // Estado para erro
 
   // Função auxiliar para definir estado ao carregar dados
   const handleLoad = async (loadFunction, onSuccess) => {
     setLoading(true);
+    setError(null); // Reseta o erro antes de tentar carregar
     try {
       const data = await loadFunction();
       onSuccess(data);
     } catch (error) {
       console.error("Erro ao carregar dados:", error);
+      setError("Nenhum livro foi encontrado com esse termo.");
       setBooks([]);
       setHighlightBook(null);
     } finally {
@@ -57,23 +59,14 @@ const useBooks = () => {
     [loadBooks] // Dependência de loadBooks
   );
 
-  // Monitorar mudanças no searchTerm e recarregar livros se necessário
-  useEffect(() => {
-    if (!searchTerm.trim()) {
-      loadBooks(); // Chama a função que carrega todos os livros quando a busca está vazia
-    } else {
-      searchBooks(searchTerm); // Chama a busca com o termo se ele não estiver vazio
-    }
-  }, [searchTerm, loadBooks, searchBooks]);
-
   return {
     books,
     highlightBook,
     loading,
+    error,
     loadBooks,
     searchBooks,
     setBooks,
-    setSearchTerm, // Expondo a função para atualizar o searchTerm
   };
 };
 

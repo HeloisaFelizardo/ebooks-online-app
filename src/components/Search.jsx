@@ -12,6 +12,10 @@ export const Search = ({ searchTerm, setSearchTerm, searchBooks }) => { // Passa
     }
   };
 
+  const handleSearchClick = () => {
+    searchBooks(searchTerm.trim()); // Chama a busca ao clicar no botão
+  };
+
   return (
     <Container display="flex" flexDirection="row" justifyContent="end" mt={8} maxW="container.xl">
       <Box mr={4}>
@@ -22,7 +26,7 @@ export const Search = ({ searchTerm, setSearchTerm, searchBooks }) => { // Passa
           onKeyDown={handleKeyDown} // Executa a busca ao pressionar Enter
         />
       </Box>
-      <Button leftIcon={<SearchIcon />} variant="ghost" onClick={() => searchBooks(searchTerm)}>
+      <Button leftIcon={<SearchIcon />} variant="ghost" onClick={handleSearchClick}>
         Buscar
       </Button>
     </Container>

@@ -11,11 +11,13 @@ import {
   Spinner,
   Icon, Textarea
 } from '@chakra-ui/react';
-import { postBook } from "../../services/bookService.js";
+import {postBook} from "../../services/bookService.js";
 import useForm from "../../hooks/useForm.js";
-import { useAuth } from "../../hooks/useAuth.js";
-import { useState, useRef } from "react";
-import { HiUpload } from "react-icons/hi";
+import {useAuth} from "../../hooks/useAuth.js";
+import {useState, useRef} from "react";
+import {HiUpload} from "react-icons/hi";
+import LoadingButton from "../../components/LoadingButton.jsx";
+import {useNavigate} from "react-router-dom";
 
 const Upload = () => {
   const [loading, setLoading] = useState(false);
@@ -25,6 +27,8 @@ const Upload = () => {
   const coverInputRef = useRef();
   const pdfInputRef = useRef();
 
+  const navigate = useNavigate();
+
   const validationRules = {
     title: (value) => (!value ? 'Título é obrigatório' : ''),
     author: (value) => (!value ? 'Autor é obrigatório' : ''),
@@ -33,19 +37,19 @@ const Upload = () => {
     pdf: (value) => (!value ? 'Livro PDF é obrigatório' : ''),
   };
 
-  const { formData, error, validate, handleChange } = useForm(
-    { title: '', author: '', description: '', cover: null, pdf: null },
+  const {formData, error, validate, handleChange} = useForm(
+    {title: '', author: '', description: '', cover: null, pdf: null},
     validationRules
   );
 
   const toast = useToast();
-  const { token } = useAuth();
+  const {token} = useAuth();
 
   const handleFileChange = (event) => {
-    const { name, files } = event.target;
+    const {name, files} = event.target;
     const file = files[0];
     if (file) {
-      handleChange({ target: { name, value: file } });
+      handleChange({target: {name, value: file}});
       if (name === "cover") setCoverName(file.name);
       if (name === "pdf") setPdfName(file.name);
     }
@@ -56,7 +60,7 @@ const Upload = () => {
 
     if (!validate()) return;
 
-    const { title, author, description, cover, pdf } = formData;
+    const {title, author, description, cover, pdf} = formData;
 
     const formDataObj = new FormData();
     formDataObj.append('title', title);
@@ -78,6 +82,8 @@ const Upload = () => {
         duration: 3000,
         isClosable: true,
       });
+      navigate('/downloads');
+
     } catch (e) {
       const message = e.response?.status === 400 && e.response.data.error === 'Livro já cadastrado.'
         ? 'Esse livro já foi cadastrado.'
@@ -116,7 +122,8 @@ const Upload = () => {
 
         <FormControl mb={4} isInvalid={error.description}>
           <FormLabel>Descrição:</FormLabel>
-          <Textarea type="text" name="description" placeholder="Digite a descrição do livro" onChange={handleChange} boxShadow="sm"/>
+          <Textarea type="text" name="description" placeholder="Digite a descrição do livro" onChange={handleChange}
+                    boxShadow="sm"/>
           {error.description && <FormErrorMessage>{error.description}</FormErrorMessage>}
         </FormControl>
 
@@ -128,9 +135,9 @@ const Upload = () => {
             name="cover"
             ref={coverInputRef}
             onChange={handleFileChange}
-            style={{ display: 'none' }}
+            style={{display: 'none'}}
           />
-          <Button onClick={() => coverInputRef.current.click()} leftIcon={<Icon as={HiUpload} />}>
+          <Button onClick={() => coverInputRef.current.click()} leftIcon={<Icon as={HiUpload}/>}>
             {coverName || 'Selecionar Capa'}
           </Button>
           {error.cover && <FormErrorMessage>{error.cover}</FormErrorMessage>}
@@ -144,17 +151,17 @@ const Upload = () => {
             name="pdf"
             ref={pdfInputRef}
             onChange={handleFileChange}
-            style={{ display: 'none' }}
+            style={{display: 'none'}}
           />
-          <Button onClick={() => pdfInputRef.current.click()} leftIcon={<Icon as={HiUpload} />}>
+          <Button onClick={() => pdfInputRef.current.click()} leftIcon={<Icon as={HiUpload}/>}>
             {pdfName || 'Selecionar PDF'}
           </Button>
           {error.pdf && <FormErrorMessage>{error.pdf}</FormErrorMessage>}
         </FormControl>
 
-        <Button colorScheme="teal" type="submit" mt={4} isDisabled={loading}>
-          {loading ? <Spinner size="sm"/> : "Enviar"}
-        </Button>
+        <LoadingButton colorScheme="teal" type="submit" mt={4} isLoading={loading}>
+          Enviar
+        </LoadingButton>
       </Box>
     </Container>
   );

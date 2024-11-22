@@ -30,6 +30,7 @@ import {HiUpload} from "react-icons/hi";
 import useBooks from "../../hooks/useBooks.js";
 import {MdDelete, MdEdit} from "react-icons/md";
 import LoadingSpinner from "../../components/LoadingSpinner.jsx";
+import LoadingButton from "../../components/LoadingButton.jsx";
 
 export const ManageBooks = () => {
   const {books, loading, loadBooks} = useBooks(); // Supondo que você tenha hook para buscar livros
@@ -323,9 +324,9 @@ export const ManageBooks = () => {
 
           <ModalFooter>
             <Button variant="ghost" onClick={onClose}>Cancelar</Button>
-            <Button colorScheme="blue" onClick={() => handleUpdate(selectedBook._id)} isLoading={loader}>
+            <LoadingButton colorScheme="blue" onClick={() => handleUpdate(selectedBook._id)} isLoading={loader}>
               Salvar
-            </Button>
+            </LoadingButton>
           </ModalFooter>
         </ModalContent>
       </Modal>
@@ -339,9 +340,9 @@ export const ManageBooks = () => {
           <ModalBody>Deseja realmente excluir o livro {selectedBook.title} ?</ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="blue" onClick={() => handleDelete(selectedBook._id)} mr={3} isLoading={loader}>
+            <LoadingButton mr={3} colorScheme="blue" onClick={() => handleDelete(selectedBook._id)} isLoading={loader}>
               Confirmar
-            </Button>
+            </LoadingButton>
             <Button onClick={onDeleteClose}>Cancelar</Button>
           </ModalFooter>
         </ModalContent>
