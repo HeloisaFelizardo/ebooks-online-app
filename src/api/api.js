@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:3000', // URL base da API
+  baseURL: 'https://livraria-online-api.onrender.com', // URL base da API
 });
 
 api.interceptors.response.use(
