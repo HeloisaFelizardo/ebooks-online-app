@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: frontend
+    env: static
+    staticPublishPath: build
+    plan: free
+    region: br
