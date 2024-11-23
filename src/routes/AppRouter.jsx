@@ -37,7 +37,7 @@ const AppRouter = () => {
 
           {/* A página de login é separada, sem Header e Footer */}
           <Route path="/login" element={<Login/>}/>
-          <Route path='/register' element={<Register/>}/>
+          <Route path="/register" element={<Register/>}/>
         </Routes>
       </Router>
     </AuthProvider>

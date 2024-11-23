@@ -12,8 +12,11 @@ const Layout = () => {
   // Verifica se a página atual é a de login
   const isLoginPage = location.pathname === '/login';
 
+  // Verifica se a página atual é a de registro
+    const isRegisterPage = location.pathname === '/register';
+
   return (
-    <Flex direction="column" minHeight="100vh" className={isHomePage ? 'home-background' : ''}>
+    <Flex direction="column" minHeight="100vh" className={isHomePage || isRegisterPage ? 'home-background' : ''}>
       {/* Renderiza o Header em todas as páginas, exceto na de login */}
       {!isLoginPage && <Header/>}
 

@@ -66,7 +66,7 @@ const Register = () => {
   };
 
   return (
-    <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+    <Box display="flex" justifyContent="center" alignItems="center" height="100vh" className='home-background'>
       <Box p={8} maxWidth="400px" borderWidth={1} borderRadius={8} boxShadow="lg" backgroundColor="blackAlpha.500">
         <Heading as="h2" mb={6} textAlign="center" color="white">Registro</Heading>
         <FormControl isInvalid={error.name} mb={4}>
