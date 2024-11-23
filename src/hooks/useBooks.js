@@ -1,5 +1,5 @@
-import { useState, useCallback } from "react";
-import { getBooks, getBooksByTerm } from "../services/bookService.js";
+import {useState, useCallback, useEffect} from "react";
+import {getBooks, getBooksByTerm} from "../services/bookService.js";
 
 const useBooks = () => {
   const [books, setBooks] = useState([]);
@@ -10,7 +10,7 @@ const useBooks = () => {
   // Função auxiliar para definir estado ao carregar dados
   const handleLoad = async (loadFunction, onSuccess) => {
     setLoading(true);
-    setError(null); // Reseta o erro antes de tentar carregar
+
     try {
       const data = await loadFunction();
       onSuccess(data);
@@ -58,6 +58,10 @@ const useBooks = () => {
     },
     [loadBooks] // Dependência de loadBooks
   );
+
+  useEffect(() => {
+    loadBooks();
+  }, []);
 
   return {
     books,
