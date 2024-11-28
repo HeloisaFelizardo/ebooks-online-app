@@ -21,9 +21,10 @@ import {useAuth} from "../../hooks/useAuth.js";
 import {deleteUser, fetchUsers, updateUser} from "../../services/userService.js";
 import LoadingSpinner from "../../components/LoadingSpinner.jsx";
 import {MdDelete, MdEdit} from "react-icons/md";
+import {useNavigate} from "react-router-dom";
 
 const ManageUsers = () => {
-  const [users, setUsers] = useState([]);
+  const [usersMap, setUsersMap] = useState(new Map());
   const [loading, setLoading] = useState(true);
   const [selectedUserId, setSelectedUserId] = useState(null); // Armazena o ID do usuário a ser atualizado/excluído
   const [selectedUser, setSelectedUser] = useState({name: '', email: '', password: ''}); // Armazena os dados do usuário a ser atualizado
@@ -32,14 +33,16 @@ const ManageUsers = () => {
   const toast = useToast();
   const {token} = useAuth();
   const initialRef = useRef(null);
+  const navigate = useNavigate();
 
-  const isMobile = useBreakpointValue({ base: true, md: false });
+  const isMobile = useBreakpointValue({base: true, md: false});
 
   // Função para carregar os usuários
   const loadUsers = async () => {
     try {
       const usersData = await fetchUsers(token);
-      setUsers(usersData);
+      const usersMap = new Map(usersData.map(user => [user._id, user])); // Cria o Map com ID como chave
+      setUsersMap(usersMap);
     } catch (error) {
       console.error(error);
     } finally {
@@ -50,8 +53,8 @@ const ManageUsers = () => {
   // Função para excluir um usuário
   const handleDelete = async (userId) => {
     try {
-      await deleteUser(userId, token);
-      const user = users.find((user) => user._id === userId);
+      await deleteUser(userId, token); // Chama a função de exclusão
+      const user = usersMap.get(userId); // Obtém o usuário diretamente do Map
       toast({
         title: 'Usuário excluído',
         description: `O usuário ${user.name} foi excluído com sucesso.`,
@@ -59,7 +62,9 @@ const ManageUsers = () => {
         duration: 3000,
         isClosable: true,
       });
-      setUsers(users.filter((user) => user._id !== userId));
+      const updatedUsersMap = new Map(usersMap); // Cria uma cópia do Map
+      updatedUsersMap.delete(userId); // Remove o usuário
+      setUsersMap(updatedUsersMap); // Atualiza o Map
       setIsDeleteModalOpen(false); // Fecha o modal após a exclusão
     } catch (error) {
       console.error('Erro ao atualizar usuário:', error);
@@ -94,25 +99,30 @@ const ManageUsers = () => {
     if (!validateForm()) return; // Valida antes de tentar atualizar
 
     try {
-      const updatedUser = await updateUser(userId, selectedUser, token); // Passa o objeto atualizado
-      console.log('Updated User:', updatedUser);
+      const response = await updateUser(userId, selectedUser, token); // Passa o objeto atualizado
+      console.log('Response from updateUser:', response); // Verifique a estrutura da resposta
 
-      const user = users.find((user) => user._id === userId); // Encontra o usuário na lista
+      const updatedUser = usersMap.get(userId); // Pega o usuário atualizado do Map
 
-      setUsers(users.map((user) => user._id === userId ? updatedUser : user)); // Atualiza o usuário na lista
+      if (response.message) {
+        // Se a resposta for apenas uma mensagem de sucesso
+        toast({
+          title: `Usuário ${updatedUser.name} atualizado`,
+          description: response.message, // Use a mensagem de sucesso
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+        });
+      }
 
-      await loadUsers(); // Recarrega a lista de usuários
-
-      toast({
-        title: 'Usuário atualizado',
-        description: `O usuário ${user.name} foi atualizado com sucesso.`,
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-      });
+      await loadUsers(); // Carrega a lista de usuários novamente
 
       setIsUpdateModalOpen(false); // Fecha o modal após a atualização
 
+      // Agora, verifique o papel do usuário para redirecionar
+      if (updatedUser && updatedUser.role === 'admin') {
+        navigate('/login'); // Redireciona para a página de login se for admin
+      }
     } catch (error) {
       console.error('Erro ao atualizar usuário:', error);
       toast({
@@ -147,67 +157,67 @@ const ManageUsers = () => {
   return (
     <Container maxW="container.xl" p={4}>
       <Heading as="h1" my={6}> Gerenciar Usuários </Heading>
-          <Box>
-            {/* Cabeçalho para telas maiores */}
-            {!isMobile && (
-              <Grid templateColumns="repeat(4, 1fr)" gap={4} fontWeight="bold" mb={4}>
-                <GridItem>ID</GridItem>
-                <GridItem>Nome</GridItem>
-                <GridItem>Email</GridItem>
-                <GridItem>Ações</GridItem>
-              </Grid>
-            )}
+      <Box>
+        {/* Cabeçalho para telas maiores */}
+        {!isMobile && (
+          <Grid templateColumns="repeat(4, 1fr)" gap={4} fontWeight="bold" mb={4}>
+            <GridItem>ID</GridItem>
+            <GridItem>Nome</GridItem>
+            <GridItem>Email</GridItem>
+            <GridItem>Ações</GridItem>
+          </Grid>
+        )}
 
-            {/* Tabela de Usuários */}
-            {users.map((user) => (
-              <Grid
-                key={user._id}
-                templateColumns={isMobile ? "1fr" : "repeat(4, 1fr)"}
-                gap={4}
-                p={4}
-                bg="gray.100"
-                border="1px solid"
-                borderColor="gray.200"
-                borderRadius="md"
-                mb={4}
-                alignItems="center"
+        {/* Tabela de Usuários */}
+        {[...usersMap.values()].map((user) => ( // Converte os valores do Map em um array
+          <Grid
+            key={user._id}
+            templateColumns={isMobile ? "1fr" : "repeat(4, 1fr)"}
+            gap={4}
+            p={4}
+            bg="gray.100"
+            border="1px solid"
+            borderColor="gray.200"
+            borderRadius="md"
+            mb={4}
+            alignItems="center"
+          >
+            <GridItem>
+              {isMobile && <Box fontWeight="bold" color="gray.500" mb={1}>ID:</Box>}
+              {user._id}
+            </GridItem>
+            <GridItem>
+              {isMobile && <Box fontWeight="bold" color="gray.500" mb={1}>Nome:</Box>}
+              {user.name}
+            </GridItem>
+            <GridItem>
+              {isMobile && <Box fontWeight="bold" color="gray.500" mb={1}>Email:</Box>}
+              {user.email}
+            </GridItem>
+            <GridItem>
+              {isMobile && <Box fontWeight="bold" color="gray.500" mb={1}>Ações:</Box>}
+              <Button
+                colorScheme="blue"
+                size="sm"
+                onClick={() => openUpdateModal(user)}
+                mr={2}
               >
-                <GridItem>
-                  {isMobile && <Box fontWeight="bold" color="gray.500" mb={1}>ID:</Box>}
-                  {user._id}
-                </GridItem>
-                <GridItem>
-                  {isMobile && <Box fontWeight="bold" color="gray.500" mb={1}>Nome:</Box>}
-                  {user.name}
-                </GridItem>
-                <GridItem>
-                  {isMobile && <Box fontWeight="bold" color="gray.500" mb={1}>Email:</Box>}
-                  {user.email}
-                </GridItem>
-                <GridItem>
-                  {isMobile && <Box fontWeight="bold" color="gray.500" mb={1}>Ações:</Box>}
-                  <Button
-                    colorScheme="blue"
-                    size="sm"
-                    onClick={() => openUpdateModal(user)}
-                    mr={2}
-                  >
-                    <MdEdit/> Editar
-                  </Button>
-                  <Button
-                    colorScheme="red"
-                    size="sm"
-                    onClick={() => {
-                      setSelectedUserId(user._id);
-                      setIsDeleteModalOpen(true);
-                    }}
-                  >
-                    <MdDelete/> Excluir
-                  </Button>
-                </GridItem>
-              </Grid>
-            ))}
-          </Box>
+                <MdEdit/> Editar
+              </Button>
+              <Button
+                colorScheme="red"
+                size="sm"
+                onClick={() => {
+                  setSelectedUserId(user._id);
+                  setIsDeleteModalOpen(true);
+                }}
+              >
+                <MdDelete/> Excluir
+              </Button>
+            </GridItem>
+          </Grid>
+        ))}
+      </Box>
 
       {/* Modal de confirmação de exclusão de usuário */}
       <Modal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)}>

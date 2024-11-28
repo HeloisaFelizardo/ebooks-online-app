@@ -33,7 +33,7 @@ import LoadingSpinner from "../../components/LoadingSpinner.jsx";
 import LoadingButton from "../../components/LoadingButton.jsx";
 
 export const ManageBooks = () => {
-  const {books, loading, loadBooks} = useBooks(); // Supondo que você tenha hook para buscar livros
+  const {books, loading, loadBooks} = useBooks();
   const initialRef = useRef(null);
   const {isOpen, onOpen, onClose} = useDisclosure();
   const {
@@ -71,8 +71,8 @@ export const ManageBooks = () => {
       title: book.title || "",
       author: book.author || "",
       description: book.description || "",
-      cover: null, // Deixe o campo de capa e pdf em null inicialmente
-      pdf: null,
+      cover: null, // Limpar o campo de capa
+      pdf: null, // Limpar o campo de pdf
     });
     setCoverName(book.cover ? book.cover.split('/').pop() : "Selecionar Capa");
     setPdfName(book.pdf ? book.pdf.split('/').pop() : "Selecionar PDF");

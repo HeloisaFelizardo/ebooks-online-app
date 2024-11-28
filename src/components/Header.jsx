@@ -78,7 +78,6 @@ const Header = () => {
             {user && user.role === 'user' && (
               <Menu>
 
-
                 <MenuButton as={Button} leftIcon={<MdMenu/>} variant="ghost" mr={4}>
                   Menu
                 </MenuButton>
