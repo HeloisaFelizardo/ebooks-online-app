@@ -3,8 +3,9 @@ import {useToast} from '@chakra-ui/react';
 import PropTypes from 'prop-types';
 import {userLogin} from "../services/userService.js";
 import LoadingSpinner from "../components/LoadingSpinner.jsx";
+import { jwtDecode } from "jwt-decode";
 
-export const AuthContext = createContext();
+export const AuthContext = createContext(null);
 
 export const AuthProvider = ({children}) => {
   const [user, setUser] = useState(() => {
@@ -17,7 +18,18 @@ export const AuthProvider = ({children}) => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      // Validar o token com o backend ou verificar se ainda é válido
+      try {
+        const decodedToken = jwtDecode(token);
+        const expirationTime = decodedToken.exp * 1000; // Expiração em milissegundos
+        if (Date.now() >= expirationTime) {
+          logout(); // Se o token expirou, realiza o logout
+        }
+      } catch (error) {
+        console.error("Token inválido", error);
+        logout(); // Se não conseguir decodificar o token, realiza o logout
+      }
+    } else {
+      logout(); // Se não houver token, realiza o logout
     }
     setLoading(false);
   }, []);
