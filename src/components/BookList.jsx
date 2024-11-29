@@ -26,7 +26,7 @@ const BookList = ({books}) => {
               coverUrl={book.coverUrl}
               description={book.description}
               onDownload={() => handleDownloadWithLoader(book._id, `${book.title}.pdf`)}
-              isLoading={loadingBooks[book._id] || false} // Passa o estado do carregamento
+              isLoading={loadingBooks[book._id] || false} // Verifica se o livro está sendo baixado
             />
           </VStack>
         ))}
