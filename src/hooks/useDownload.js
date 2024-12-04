@@ -13,7 +13,7 @@ const useDownload = () => {
       toast({
         title: 'Faça seu login para baixar!',
         description: 'Você precisa estar logado para fazer esse download.',
-        status: 'error',
+        status: 'info',
         duration: 5000,
         isClosable: true,
       });

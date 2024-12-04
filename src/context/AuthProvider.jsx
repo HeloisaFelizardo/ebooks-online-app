@@ -58,7 +58,7 @@ export const AuthProvider = ({children}) => {
 
       saveUserData(userData);
 
-      console.log("Usuário logado com sucesso", response);
+      console.log("Usuário logado com sucesso");
       showToast('Login realizado com sucesso.', `Bem-vindo(a) ${name}!`, 'success');
     } catch (error) {
       console.error("Erro ao fazer login", error);

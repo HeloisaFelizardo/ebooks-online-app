@@ -1,7 +1,5 @@
 # Livraria de Ebooks Online
 
-**Visite**: [Ebooks Online](https://ebooks-cn24.onrender.com)
-
 Este projeto é uma plataforma de livraria de ebooks online, onde usuários podem navegar e baixar ebooks. Administradores podem gerenciar usuários e ebooks. A plataforma é desenvolvida para ser intuitiva e fácil de usar tanto para leitores quanto para administradores.
 
 ## 1. Interface do Usuário (UI)
